@@ -5,11 +5,6 @@
                 <Button label="New" icon="pi pi-plus" class="p-button-success p-mr-2" />
                 <Button label="Delete" icon="pi pi-trash" class="p-button-danger" />
             </template>
-
-            <template slot="right">
-                <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="p-mr-2" />
-                <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportCSV($event)"  />
-            </template>
         </Toolbar>
 
         <DataTable ref="dt" :value="stockPerformances" class="p-datatable-striped" 
@@ -86,6 +81,11 @@
                     <Column :footer="profitPercentage() | percent" :footerStyle="adjustColor(profitPercentage())" />
                 </Row>
             </ColumnGroup>
+            <Column>
+                <template #body="slotProps">
+                    <Button icon="pi pi-dollar" class="p-button-rounded p-button-success p-mr-2" @click="onViewTransaction(slotProps.data.symbol)" />
+                </template>
+            </Column>
         </DataTable>
     </div>
 </template>
@@ -130,6 +130,9 @@ export default {
             var total = 0;
             total = (this.currentValueTotal - this.marketPriceTotal) / this.currentValueTotal ;
             return total;
+        },
+        onViewTransaction(symbol) {
+            this.$router.push({ path: `symbol/${symbol}/transaction`})
         }
     },
     computed: {

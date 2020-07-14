@@ -1,7 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
+import router from './router'
 
 Vue.config.productionTip = false
+
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -11,6 +17,9 @@ import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
+import Dialog from 'primevue/dialog';
+import InputNumber from 'primevue/inputnumber';
+import Dropdown from 'primevue/dropdown';
 
 Vue.component('DataTable', DataTable);
 Vue.component('Column', Column);
@@ -20,6 +29,17 @@ Vue.component('Button', Button);
 Vue.component('FileUpload', FileUpload);
 Vue.component('ColumnGroup', ColumnGroup);
 Vue.component('Row', Row);
+Vue.component('Dialog', Dialog);
+Vue.component('InputNumber', InputNumber);
+Vue.component('Dropdown', Dropdown);
+
+import { ToastPlugin } from 'bootstrap-vue'
+Vue.use(ToastPlugin)
+
+// Install BootstrapVue
+Vue.use(BootstrapVue)
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
 
 let formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -45,4 +65,5 @@ Vue.filter('percent', function(value) {
 
 new Vue({
   render: h => h(App),
+  router
 }).$mount('#app')
