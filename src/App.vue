@@ -1,13 +1,28 @@
 <template>
+<div>
+ <nav-bar></nav-bar>
   <div id="app">
-      <router-view/>
+      <div class="mt-5">
+            <router-view/>
+      </div>
+      
   </div>
+</div>
 </template>
 
 <script>
+import NavBar from './components/NavBar.vue';
 
 export default {
-  name: 'App',
+    name: 'App',
+    components: {
+        NavBar
+    },
+    watch: {
+      '$route' (to) {
+        document.title = to.meta.title || 'Your Website'
+      }
+    },
 }
 </script>
 

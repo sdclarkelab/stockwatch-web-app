@@ -1,6 +1,7 @@
 <template>
     <div>
         <transactions-table :transactions="transactions" @onSaveTransaction="onSaveTransaction" @onDeleteTransaction="onDeleteTransaction"/>
+        <b-button variant="info" to="/dashboard">Back</b-button>
     </div>
 </template>
 
@@ -19,7 +20,6 @@ export default {
     data() {
         return {
             transactions: [],
-            loading: false,
             symbol: ''
         };
     },
@@ -32,12 +32,8 @@ export default {
     },
     methods: {
         getSymbolTransactions() {
-            this.loading = true;
-            // const id = this.$route;
-            // console.log(id);
             this.stockwatchService.getSymbolTransactions(this.symbol).then(response => {
                 this.transactions = response.data;
-                this.loading = false;
             });
         },
         createSymbolTransaction(transaction) {

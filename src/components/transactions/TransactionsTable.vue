@@ -24,7 +24,7 @@
             </Column>
         </DataTable>
 
-        <Dialog :visible.sync="showAddTranactionDialog"  header="Transaction Details" :modal="true" class="p-fluid">
+        <Dialog :visible.sync="showAddTransactionDialog"  header="Transaction Details" :modal="true" class="p-fluid">
 
             <div class="p-formgrid p-grid">
                 <div class="p-field p-col">
@@ -49,13 +49,13 @@
             </template>
         </Dialog>
 
-        <Dialog :visible.sync="showDeleteTranactionDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
+        <Dialog :visible.sync="showDeleteTransactionDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
             <div class="confirmation-content">
                 <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem" />
                 <span v-if="transaction">Are you sure you want to delete?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" class="p-button-text" @click="showDeleteTranactionDialog = false"/>
+                <Button label="No" icon="pi pi-times" class="p-button-text" @click="showDeleteTransactionDialog = false"/>
                 <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteTransaction" />
             </template>
         </Dialog>
@@ -73,8 +73,8 @@ export default {
     data() {
         return {
             transaction: {},
-            showAddTranactionDialog: false,
-            showDeleteTranactionDialog: false,
+            showAddTransactionDialog: false,
+            showDeleteTransactionDialog: false,
             selectedTransactions: null,
             actionOptions: ['buy', 'sell']
         };
@@ -84,23 +84,23 @@ export default {
     methods: {
         openNew() {
             this.transaction = {};
-            this.showAddTranactionDialog = true;
+            this.showAddTransactionDialog = true;
         },
         hideDialog() {
-            this.showAddTranactionDialog = false;
+            this.showAddTransactionDialog = false;
         },
         confirmDeleteTransaction(transaction) {
             this.transaction = transaction;
-            this.showDeleteTranactionDialog = true;
+            this.showDeleteTransactionDialog = true;
         },
         deleteTransaction() {
-            this.showDeleteTranactionDialog = false;
+            this.showDeleteTransactionDialog = false;
 
             this.$emit('onDeleteTransaction', this.transaction.id);
             this.transaction = {};
         },
         saveTransaction() {
-            this.showAddTranactionDialog = false;
+            this.showAddTransactionDialog = false;
     
             this.$emit('onSaveTransaction', this.transaction);
             this.transaction = {};

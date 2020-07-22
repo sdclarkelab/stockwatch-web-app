@@ -1,11 +1,11 @@
 <template>
     <div>
-        <Toolbar class="p-mb-4">
+        <!-- <Toolbar class="p-mb-4">
             <template slot="left">
                 <Button label="New" icon="pi pi-plus" class="p-button-success p-mr-2" />
                 <Button label="Delete" icon="pi pi-trash" class="p-button-danger" />
             </template>
-        </Toolbar>
+        </Toolbar> -->
 
         <DataTable ref="dt" :value="stockPerformances" class="p-datatable-striped" 
         :loading="loading" :scrollable="true" scrollHeight="500px" :paginator="true" :rows="10"
@@ -132,7 +132,7 @@ export default {
             return total;
         },
         onViewTransaction(symbol) {
-            this.$router.push({ path: `symbol/${symbol}/transaction`})
+            this.$router.push({ path: `symbol/${symbol}/transaction`});
         }
     },
     computed: {
