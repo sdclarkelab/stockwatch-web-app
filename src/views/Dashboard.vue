@@ -1,18 +1,23 @@
 <template>
     <div>
-        <!-- <Toolbar class="p-mb-4">
+        <Toolbar class="p-mb-4">
             <template slot="left">
-                <Button label="New" icon="pi pi-plus" class="p-button-success p-mr-2" />
-                <Button label="Delete" icon="pi pi-trash" class="p-button-danger" />
+                <Button label="New" icon="pi pi-plus" class="p-button-success p-mr-2" @click="addStock" />
             </template>
-        </Toolbar> -->
+        </Toolbar>
+
+        <b-modal v-model="modalShow" size="xl" :title="modalTitle">
+            <transactions-table :symbol-transactions="transactions" 
+            :transactionLoading="transactionLoading" 
+            @onSaveTransaction="onSaveTransaction" 
+            @onDeleteTransaction="onDeleteTransaction"/>
+        </b-modal>
 
         <DataTable ref="dt" :value="stockPerformances" class="p-datatable-striped" 
-        :loading="loading" :scrollable="true" scrollHeight="500px" :paginator="true" :rows="10"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[5,10,25]"
+        :loading="loading" :scrollable="true" scrollHeight="500px" :paginator="true" :rows="15"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[15,30,45]"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
         >
-            <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
 
             <Column field="symbol" header="Stock Code" :sortable="true"></Column>
 
@@ -70,7 +75,7 @@
 
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="Totals:" :colspan="2" />
+                    <Column footer="Totals:" :colspan="1" />
                     <Column :colspan="2" footerStyle="background-color:#e0e0e0" />
                     <Column :footer="marketPriceTotal | currency" footerStyle="background-color:#e0e0e0" />
                     <Column :colspan="1" />
@@ -83,7 +88,9 @@
             </ColumnGroup>
             <Column>
                 <template #body="slotProps">
-                    <Button icon="pi pi-dollar" class="p-button-rounded p-button-success p-mr-2" @click="onViewTransaction(slotProps.data.symbol)" />
+                    <!-- <Button icon="pi pi-dollar" class="p-button-rounded p-button-success p-mr-2" @click="onViewTransaction(slotProps.data.symbol)" /> -->
+                    <!-- <Button icon="pi pi-dollar" class="p-button-rounded p-button-success p-mr-2" @click="modalShow = !modalShow" /> -->
+                    <b-button @click="onShowModal(slotProps.data.symbol)"><i class="fa fa-university" aria-hidden="true"></i></b-button>
                 </template>
             </Column>
         </DataTable>
@@ -93,13 +100,22 @@
 <script>
 import Stockwatch from "../services/stockwatchService";
 
+import TransactionsTable from "../components/transactions/TransactionsTable.vue";
+
 export default {
     name: 'Dashboard',
     stockwatchService: null,
+    components: {
+        TransactionsTable
+    },
     data() {
         return {
+            modalTitle: '',
+            transactions: [],
             stockPerformances: [],
-            loading: false
+            modalShow: false,
+            loading: false,
+            transactionLoading: false
         };
     },
     created() {
@@ -113,10 +129,23 @@ export default {
         })
     },
     methods: {
+        onShowModal(symbol) {
+            this.getSymbolTransactions(symbol);
+            this.modalShow = !this.modalShow;
+            this.modalTitle = `${symbol} Transactions`;
+            console.log(symbol);
+        },
+        getSymbolTransactions(symbol) {
+            this.transactionLoading = true;
+            this.stockwatchService.getSymbolTransactions(symbol).then(response => {
+                this.transactions = response.data;
+                this.transactionLoading = false;
+            });
+        },
         adjustColor(value) {
             return value < 0 ? 'font-weight: bold;color:red' : 'font-weight: bold;color:green'
         },
-        openNew() {},
+        addStock() {},
         exportCSV() {
             this.$refs.dt.exportCSV();
         },
@@ -133,6 +162,48 @@ export default {
         },
         onViewTransaction(symbol) {
             this.$router.push({ path: `symbol/${symbol}/transaction`});
+        },
+        createSymbolTransaction(transaction) {
+            this.stockwatchService.createSymbolTransaction(this.symbol, transaction).then(response => {
+                if (response.data) {
+                    this.$bvToast.toast('Transaction Successfully Added!', {
+                        title: "Successful",
+                        variant: "success",
+                        solid: true,
+                        autoHideDelay: 5000,
+                    });
+
+                    this.getSymbolTransactions();
+                }
+            });
+        },
+        updateSymbolTransaction() {
+            this.stockwatchService.updateSymbolTransaction(this.symbol).then(response => {
+                this.transactions = response.data;
+            });
+        },
+        deleteSymbolTransactions(transactionId) {
+            this.stockwatchService.deleteSymbolTransaction(this.symbol, transactionId).then(response => {
+                if (response.data) {
+                    this.$bvToast.toast('Transaction Successfully Deleted.', {
+                        title: "Successful",
+                        variant: "success",
+                        solid: true,
+                        autoHideDelay: 5000,
+                    });
+
+                    this.getSymbolTransactions();
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            });            
+        },
+        onSaveTransaction(transaction) {
+            this.createSymbolTransaction(transaction);
+        },
+        onDeleteTransaction(transactionId) {
+            this.deleteSymbolTransactions(transactionId);
         }
     },
     computed: {

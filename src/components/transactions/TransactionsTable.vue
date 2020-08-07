@@ -6,7 +6,7 @@
             </template>
         </Toolbar>
 
-        <DataTable :value="transactions" :selection.sync="selectedTransactions">
+        <DataTable :value="transactions" :selection.sync="selectedTransactions" :loading="transactionLoading">
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column  field="last_updated_date" header="Date" />
             <Column  field="action" header="Action" />
@@ -68,10 +68,12 @@
 export default {
     name: 'TransactionsTable',
     props: {
-        transactions: Array
+        symbolTransactions: Array,
+        transactionLoading: Boolean
     },
     data() {
         return {
+            transactions: this.symbolTransactions,
             transaction: {},
             showAddTransactionDialog: false,
             showDeleteTransactionDialog: false,
@@ -104,6 +106,11 @@ export default {
     
             this.$emit('onSaveTransaction', this.transaction);
             this.transaction = {};
+        }
+    },
+    watch: {
+        symbolTransactions() {
+            this.transactions = this.symbolTransactions;
         }
     }
 }
