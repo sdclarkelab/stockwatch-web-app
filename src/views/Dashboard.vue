@@ -13,6 +13,35 @@
             @onDeleteTransaction="onDeleteTransaction"/>
         </b-modal>
 
+        <Dialog :visible.sync="showAddTransactionDialog"  header="Transaction Details" :modal="true" class="p-fluid">
+            <div class="p-formgrid p-grid">
+                <div class="p-field p-col">
+                    <label for="price">Stocks</label>
+                    <b-form-select v-model="selectedStock" :options="stockOptions" text-field="instrument_name" value-field="symbol"></b-form-select>
+                </div>
+                <div class="p-field p-col">
+                    <label for="price">Action</label>
+                    <b-form-select v-model="transaction.action" :options="actionOptions"></b-form-select>
+                </div>
+                <div class="p-field p-col">
+                    <label for="price">Price</label>
+                    <InputNumber id="price" v-model="transaction.price" mode="currency" currency="USD" locale="en-US" />
+                </div>
+                <div class="p-field p-col">
+                    <label for="shares">Shares</label>
+                    <InputNumber id="shares" v-model="transaction.shares" />
+                </div>
+                <div class="p-field p-col">
+                    <label for="fees">Fees</label>
+                    <InputNumber id="fees" v-model="transaction.fees" mode="currency" currency="USD" locale="en-US" />
+                </div>
+            </div>
+            <template #footer>
+                <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog"/>
+                <Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveStock" />
+            </template>
+        </Dialog>
+
         <DataTable ref="dt" :value="stockPerformances" class="p-datatable-striped" 
         :loading="loading" :scrollable="true" scrollHeight="500px" :paginator="true" :rows="15"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[15,30,45]"
@@ -99,36 +128,60 @@
 
 <script>
 import Stockwatch from "../services/stockwatchService";
+import JamStockExService from "../services/jamStockExService";
 
 import TransactionsTable from "../components/transactions/TransactionsTable.vue";
 
 export default {
     name: 'Dashboard',
     stockwatchService: null,
+      jamStockExService: null,
     components: {
-        TransactionsTable
+        TransactionsTable,
     },
     data() {
         return {
             modalTitle: '',
+            actionOptions: ['buy', 'sell'],
+            transaction: {},
             transactions: [],
             stockPerformances: [],
             modalShow: false,
+            showStockModal: false,
             loading: false,
-            transactionLoading: false
+            transactionLoading: false,
+            showAddTransactionDialog: false,
+            stockOptions: [],
+            selectedStock: ''
         };
     },
     created() {
         this.stockwatchService = new Stockwatch();
+        this.jamStockExService = new JamStockExService();
     },
     mounted() {
-        this.loading = true;
-        this.stockwatchService.getStockPerformance().then(response => {
-            this.stockPerformances = response.data;
-            this.loading = false;
-        })
+        
+        this.loadStockPerformance();
+        this.getJSEStocks();
     },
     methods: {
+        loadStockPerformance() {
+            this.loading = true;
+            this.stockwatchService.getStockPerformance().then(response => {
+                this.stockPerformances = response.data;
+                this.loading = false;
+            });
+        },
+        getJSEStocks() {
+            this.jamStockExService.getStocks('', 'symbol instrument_name').then(response => {
+                this.stockOptions = response.data;
+            });
+        },
+        // getStocks() {
+        //     this.stockwatchService.getStocks().then(response => {
+        //         this.stockOptions = response.data;
+        //     });
+        // },
         onShowModal(symbol) {
             this.getSymbolTransactions(symbol);
             this.modalShow = !this.modalShow;
@@ -145,7 +198,37 @@ export default {
         adjustColor(value) {
             return value < 0 ? 'font-weight: bold;color:red' : 'font-weight: bold;color:green'
         },
-        addStock() {},
+        addStock() {
+            this.transaction = {};
+            this.showAddTransactionDialog = true;
+        },
+        hideDialog() {
+            this.showAddTransactionDialog = false;
+        },
+        saveStock() {
+            this.showAddTransactionDialog = false;
+            
+
+            this.stockwatchService.postStocks(this.selectedStock).then(stock => {
+                console.log(stock);
+
+                this.stockwatchService.createSymbolTransaction(this.selectedStock, this.transaction).then(response => {
+                    if (response.data) {
+                        this.$bvToast.toast('Transaction Successfully Added!', {
+                            title: "Successful",
+                            variant: "success",
+                            solid: true,
+                            autoHideDelay: 5000,
+                        });
+                        this.transaction = {};
+                        this.loadStockPerformance();
+                    }
+                });
+            
+            });
+
+
+        },
         exportCSV() {
             this.$refs.dt.exportCSV();
         },

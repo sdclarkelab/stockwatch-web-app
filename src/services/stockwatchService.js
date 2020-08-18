@@ -3,7 +3,8 @@ const axios = require('axios');
 
 const headers = {
     headers: {
-        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        // 'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        'Authorization': `Bearer ${process.env.VUE_APP_STOCKWATCH_TOKEN}`
     }
 };
 
@@ -76,8 +77,8 @@ export default class Stockwatch {
         });
     }
 
-    postStocks(investorId, portfolioId, symbol) {
-        return axios.post(`${process.env.VUE_APP_STOCK_WATCH_URL}/investor/${investorId}/portfolio/${portfolioId}/stock`, 
+    postStocks(symbol) {
+        return axios.post(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/`, 
             {
                 "symbol": symbol
             },

@@ -20,6 +20,7 @@ export default {
     data() {
         return {
             transactions: [],
+            actionOptions: ['buy', 'sell'],
             symbol: ''
         };
     },
