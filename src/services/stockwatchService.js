@@ -80,7 +80,8 @@ export default class Stockwatch {
     postStocks(symbol) {
         return axios.post(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/`, 
             {
-                "symbol": symbol
+                "symbol": symbol,
+                "status": 1
             },
             headers
         )

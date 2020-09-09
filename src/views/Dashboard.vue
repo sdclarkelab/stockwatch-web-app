@@ -50,12 +50,6 @@
 
             <Column field="symbol" header="Stock Code" :sortable="true"></Column>
 
-            <Column field="market_position.dollar_change" header="Price Change" bodyStyle="background-color:#e0e0e0">
-                 <template #body="slotProps">
-                    {{ slotProps.data.market_position.dollar_change | currency }}
-                </template>       
-            </Column>
-
             <Column field="market_position.market_price" header="Market Price" bodyStyle="background-color:#e0e0e0">
                  <template #body="slotProps">
                     {{ slotProps.data.market_position.market_price | currency }}
@@ -68,23 +62,33 @@
                 </template>       
             </Column>
 
-            <Column field="transaction_info.average_price" header="Average Price">
+            <Column field="transaction_info.avg_net_price" header="Average Price">
                 <template #body="slotProps">
-                    {{ slotProps.data.transaction_info.average_price | currency }}
+                    {{ slotProps.data.transaction_info.avg_net_price | currency }}
                 </template>
             </Column>
 
-            <Column field="transaction_info.total_value" header="Current Amount" :sortable="true">
+            <Column field="transaction_info.total_net_amount" header="Average Net Amount">
+                <template #body="slotProps">
+                    {{ slotProps.data.transaction_info.total_net_amount | currency }}
+                </template>
+            </Column>
+
+            <Column field="transaction_info.current_value" header="Current Amount" :sortable="true">
                  <template #body="slotProps">
-                    {{ slotProps.data.transaction_info.total_value | currency }}
+                    {{ slotProps.data.transaction_info.current_value | currency }}
                 </template>           
             </Column>
 
-            <Column field="transaction_info.total_shares" header="Total Shares"></Column>
-
-            <Column field="stock_weight" header="Weight %" :sortable="true">
+            <Column field="stock_weight.market" header="Market Value Weight %" :sortable="true">
                 <template #body="slotProps">
-                    <ProgressBar :value="slotProps.data.stock_weight" :showValue="true"></ProgressBar>
+                    <ProgressBar :value="slotProps.data.stock_weight.market" :showValue="true"></ProgressBar>
+                </template>
+            </Column>
+
+            <Column field="stock_weight.owned" header="Units owned Weight %" :sortable="true">
+                <template #body="slotProps">
+                    <ProgressBar :value="slotProps.data.stock_weight.owned" :showValue="true"></ProgressBar>
                 </template>
             </Column>
 
@@ -105,12 +109,12 @@
             <ColumnGroup type="footer">
                 <Row>
                     <Column footer="Totals:" :colspan="1" />
-                    <Column :colspan="2" footerStyle="background-color:#e0e0e0" />
+                    <Column :colspan="1" footerStyle="background-color:#e0e0e0" />
                     <Column :footer="marketPriceTotal | currency" footerStyle="background-color:#e0e0e0" />
                     <Column :colspan="1" />
+                    <Column :footer="totalNetAmount | currency" />
                     <Column :footer="currentValueTotal | currency" />
-                    <Column :footer="sharesOwnTotal" />
-                    <Column :colspan="1" />
+                    <Column :colspan="2" />
                     <Column :footer="profitTotal() | currency" :footerStyle="adjustColor(profitTotal())" />
                     <Column :footer="profitPercentage() | percent" :footerStyle="adjustColor(profitPercentage())" />
                 </Row>
@@ -174,7 +178,7 @@ export default {
         },
         getJSEStocks() {
             this.jamStockExService.getStocks('', 'symbol instrument_name').then(response => {
-                this.stockOptions = response.data;
+                this.stockOptions = response.data.result;
             });
         },
         // getStocks() {
@@ -293,7 +297,7 @@ export default {
         currentValueTotal() {
             let total = 0;
             for(let stockPerformance of this.stockPerformances) {
-                total += stockPerformance.transaction_info.total_value;
+                total += stockPerformance.transaction_info.current_value;
             }
 
             return total;
@@ -310,6 +314,14 @@ export default {
             let total = 0;
             for(let stockPerformance of this.stockPerformances) {
                 total += stockPerformance.transaction_info.total_shares;
+            }
+
+            return total;
+        },
+        totalNetAmount() {
+            let total = 0;
+            for(let stockPerformance of this.stockPerformances) {
+                total += stockPerformance.transaction_info.total_net_amount;
             }
 
             return total;
