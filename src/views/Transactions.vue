@@ -1,8 +1,17 @@
 <template>
-    <div>
-        <transactions-table :transactions="transactions" @onSaveTransaction="onSaveTransaction" @onDeleteTransaction="onDeleteTransaction"/>
-        <b-button variant="info" to="/dashboard">Back</b-button>
-    </div>
+  <div>
+    <transactions-table
+      :transactions="transactions"
+      @onSaveTransaction="onSaveTransaction"
+      @onDeleteTransaction="onDeleteTransaction"
+    />
+    <b-button
+      variant="info"
+      to="/dashboard"
+    >
+      Back
+    </b-button>
+  </div>
 </template>
 
 <script>

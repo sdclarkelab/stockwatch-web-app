@@ -1,9 +1,15 @@
+const qs = require('querystring')
+
 const axios = require('axios');
+const stockWatchJaAxios = axios.create({
+    baseURL: process.env.VUE_APP_STOCK_WATCH_URL,
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    // baseUrl: 'http://localhost:5555/api/v1'
+});
 
 
 const headers = {
     headers: {
-        // 'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
         'Authorization': `Bearer ${process.env.VUE_APP_STOCKWATCH_TOKEN}`
     }
 };
@@ -11,7 +17,7 @@ const headers = {
 export default class Stockwatch {
 
     login(formData) {
-        return axios.post(
+        return stockWatchJaAxios.post(
             `${process.env.VUE_APP_STOCK_WATCH_URL}/stockwatch_admin/o/token/`,
             formData,
             {
@@ -33,7 +39,7 @@ export default class Stockwatch {
     }
 
     logout(formData) {
-        return axios.post(
+        return stockWatchJaAxios.post(
             `${process.env.VUE_APP_STOCK_WATCH_URL}/stockwatch_admin/o/revoke_token/`,
             formData,
             {
@@ -54,15 +60,32 @@ export default class Stockwatch {
         });
     }
 
-    getStockPerformance() {
-        return axios.get(
-            `http://localhost:5555/api/v1/investor/2/portfolio/1/performance/`,
-            headers
-        )
+    async getStockPerformance() {
+        var token = JSON.parse(localStorage.getItem('user-token'))
+
+        const requestBody = {
+            'username': 'test',
+            'password': 'test',
+            'grant_type': 'password'
+        };
+ 
+        if (!token) {
+            token = await stockWatchJaAxios.post(`/stockwatch_admin/o/token/`, qs.stringify(requestBody), {
+                auth: {
+                  username: process.env.VUE_APP_STOCKWATCH_CLIENT,
+                  password: process.env.VUE_APP_STOCKWATCH_SECRET
+                }
+              }).data
+              localStorage.setItem('user-token', JSON.stringify(token.data))
+        }
+ 
+        stockWatchJaAxios.defaults.headers.common['Authorization'] = `Bearer ${token.access_token}`;
+
+        return stockWatchJaAxios.get(`/investor/2/portfolio/1/performance/`)
     }
 
     getInvestorId() {
-        return axios.get(
+        return stockWatchJaAxios.get(
             `${process.env.VUE_APP_STOCK_WATCH_URL}/investor/get_id/`,
             headers
         )
@@ -78,7 +101,7 @@ export default class Stockwatch {
     }
 
     postStocks(symbol) {
-        return axios.post(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/`, 
+        return stockWatchJaAxios.post(`/investor/2/portfolio/1/stock/`, 
             {
                 "symbol": symbol,
                 "status": 1
@@ -95,7 +118,7 @@ export default class Stockwatch {
     }
 
     getStocks() {
-        return axios.get(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/`, 
+        return stockWatchJaAxios.get(`/investor/2/portfolio/1/stock/`, 
             headers
         )
         .then(response => {
@@ -108,7 +131,7 @@ export default class Stockwatch {
     }
 
     deleteStockBySymbol(symbol) {
-        return axios.delete(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/${symbol}`,
+        return stockWatchJaAxios.delete(`/investor/2/portfolio/1/stock/${symbol}`,
             headers
         )
         .then(response => {
@@ -121,7 +144,7 @@ export default class Stockwatch {
     }
 
     createStockBySymbol(symbol) {
-        return axios.post(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/`, 
+        return stockWatchJaAxios.post(`/investor/2/portfolio/1/stock/`, 
             {
                 "symbol": symbol
             },
@@ -137,7 +160,7 @@ export default class Stockwatch {
     }
 
     getSymbolTransactions(symbol) {
-        return axios.get(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/${symbol}/transaction/`,
+        return stockWatchJaAxios.get(`/investor/2/portfolio/1/stock/${symbol}/transaction/`,
             headers
         )
         .then(response => {
@@ -150,7 +173,7 @@ export default class Stockwatch {
     }
 
     createSymbolTransaction(symbol, payload) {
-        return axios.post(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/${symbol}/transaction/`, 
+        return stockWatchJaAxios.post(`/investor/2/portfolio/1/stock/${symbol}/transaction/`, 
             payload,
             headers
         )
@@ -162,9 +185,10 @@ export default class Stockwatch {
             console.log(error);
         });
     }
+    
 
     updateSymbolTransaction(symbol, payload) {
-        return axios.put(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/${symbol}/transaction/`, 
+        return stockWatchJaAxios.put(`/investor/2/portfolio/1/stock/${symbol}/transaction/`, 
             payload,
             headers
         )
@@ -178,7 +202,7 @@ export default class Stockwatch {
     }
 
     deleteSymbolTransaction(symbol, transactionId) {
-        return axios.delete(`http://localhost:5555/api/v1/investor/2/portfolio/1/stock/${symbol}/transaction/${transactionId}`,
+        return stockWatchJaAxios.delete(`/investor/2/portfolio/1/stock/${symbol}/transaction/${transactionId}`,
             headers
         )
         .then(response => {

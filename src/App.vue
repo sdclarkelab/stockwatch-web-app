@@ -1,13 +1,12 @@
 <template>
-<div>
- <nav-bar></nav-bar>
-  <div id="app">
+  <div>
+    <nav-bar />
+    <div id="app">
       <div class="mt-5">
-            <router-view/>
+        <router-view />
       </div>
-      
+    </div>
   </div>
-</div>
 </template>
 
 <script>

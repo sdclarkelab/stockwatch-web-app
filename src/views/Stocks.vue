@@ -1,8 +1,13 @@
 <template>
-    <div>
-        <div>Test</div>
-        <stocks-table :stocks="stocks" :symbolOptions="symbolOptions" @onSaveStock="onSaveStock" @onDeleteStock="onDeleteStock"/>
-    </div>
+  <div>
+    <div>Test</div>
+    <stocks-table
+      :stocks="stocks"
+      :symbol-options="symbolOptions"
+      @onSaveStock="onSaveStock"
+      @onDeleteStock="onDeleteStock"
+    />
+  </div>
 </template>
 
 <script>
@@ -19,6 +24,12 @@ export default {
     components: {
         StocksTable
     },
+    data() {
+        return {
+            stocks: [],
+            symbolOptions: []
+        };
+    },
     created() {
         this.stockwatchService = new Stockwatch();
         this.jamStockExService = new JamStockExService();
@@ -26,12 +37,6 @@ export default {
     mounted() {
         this.getStocks();
         this.getJSEStocks();
-    },
-    data() {
-        return {
-            stocks: [],
-            symbolOptions: []
-        };
     },
     methods: {
         getJSEStocks() {
