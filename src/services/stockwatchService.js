@@ -25,9 +25,6 @@ export default class Stockwatch {
                 })
                 .then((response) => {
                     localStorage.setItem('user', response.data.access_token);
-                    stockWatchJaAxios.defaults.headers.common[
-                        'Authorization'
-                    ] = `Bearer ${localStorage.getItem('user')}`;
                     resolve(response);
                 })
                 .catch((error) => {
@@ -37,20 +34,21 @@ export default class Stockwatch {
         });
     }
 
-    logout(formData) {
+    logout() {
+        const formData = {
+            token: localStorage.getItem('user'),
+        };
+
         return stockWatchJaAxios
-            .post(
-                `${process.env.VUE_APP_STOCK_WATCH_URL}/stockwatch_admin/o/revoke_token/`,
-                formData,
-                {
-                    auth: {
-                        username: process.env.VUE_APP_STOCK_WATCH_USERNAME,
-                        password: process.env.VUE_APP_STOCK_WATCH_PASSWORD,
-                    },
-                }
-            )
+            .post(`/stockwatch_admin/o/revoke_token/`, qs.stringify(formData), {
+                auth: {
+                    username: process.env.VUE_APP_STOCKWATCH_CLIENT,
+                    password: process.env.VUE_APP_STOCKWATCH_SECRET,
+                },
+            })
             .then((response) => {
                 if (response.status === 200) {
+                    localStorage.removeItem('user');
                     console.log('Successfully Logged Out');
                     return response;
                 }
