@@ -54,6 +54,15 @@ export default {
 
                         this.getSymbolTransactions();
                     }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.$bvToast.toast('Error!', {
+                        title: 'Error',
+                        variant: 'danger',
+                        solid: true,
+                        autoHideDelay: 5000,
+                    });
                 });
         },
         updateSymbolTransaction() {

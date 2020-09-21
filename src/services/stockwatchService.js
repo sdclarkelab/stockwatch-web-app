@@ -77,7 +77,7 @@ export default class Stockwatch {
             });
     }
 
-    postStocks(symbol) {
+    createStock(symbol) {
         return stockWatchJaAxios
             .post(`/investor/2/portfolio/1/stock/`, {
                 symbol: symbol,
@@ -118,9 +118,13 @@ export default class Stockwatch {
 
     createStockBySymbol(symbol) {
         return stockWatchJaAxios
-            .post(`/investor/2/portfolio/1/stock/`, {
-                symbol: symbol,
-            })
+            .post(
+                `/investor/2/portfolio/1/stock/`,
+                {
+                    symbol: symbol,
+                },
+                { headers: { 'Content-Type': 'application/json' } }
+            )
             .then((response) => {
                 console.log('Added stock.');
                 return response;
@@ -142,9 +146,9 @@ export default class Stockwatch {
             });
     }
 
-    createSymbolTransaction(symbol, payload) {
+    createSymbolTransaction(payload) {
         return stockWatchJaAxios
-            .post(`/investor/2/portfolio/1/stock/${symbol}/transaction/`, payload)
+            .post(`/investor/2/portfolio/1/stock/${payload.symbol}/transaction/`, payload)
             .then((response) => {
                 console.log('Added stock to transaction.');
                 return response;

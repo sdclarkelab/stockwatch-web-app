@@ -35,6 +35,10 @@ Vue.component('Dialog', Dialog);
 Vue.component('InputNumber', InputNumber);
 Vue.component('Dropdown', Dropdown);
 
+import messageService from './services/messageService';
+
+Vue.prototype.$messageService = new messageService();
+
 import { ToastPlugin } from 'bootstrap-vue';
 Vue.use(ToastPlugin);
 
@@ -64,7 +68,7 @@ Vue.filter('percent', function (value) {
     return ((Number(value) * 100) / 100).toFixed(2) + '%';
 });
 
-new Vue({
+export const app = new Vue({
     render: (h) => h(App),
     router,
 }).$mount('#app');

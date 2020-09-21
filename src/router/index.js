@@ -10,7 +10,7 @@ Vue.use(VueRouter);
 const routes = [
     {
         path: '/',
-        redirect: '/dashboard',
+        redirect: '/login',
     },
     {
         path: '/login',
@@ -28,22 +28,22 @@ const routes = [
             title: 'Dashboard - Stockwatch App',
         },
     },
-    {
-        path: '/symbol/:symbol/transaction',
-        name: 'Transaction',
-        component: Transaction,
-        meta: {
-            title: 'Transaction - Stockwatch App',
-        },
-    },
-    {
-        path: '/stocks',
-        name: 'Stocks',
-        component: Stocks,
-        meta: {
-            title: 'Stocks - Stockwatch App',
-        },
-    },
+    // {
+    //     path: '/symbol/:symbol/transaction',
+    //     name: 'Transaction',
+    //     component: Transaction,
+    //     meta: {
+    //         title: 'Transaction - Stockwatch App',
+    //     },
+    // },
+    // {
+    //     path: '/stocks',
+    //     name: 'Stocks',
+    //     component: Stocks,
+    //     meta: {
+    //         title: 'Stocks - Stockwatch App',
+    //     },
+    // },
 ];
 
 const router = new VueRouter({
