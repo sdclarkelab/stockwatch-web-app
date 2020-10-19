@@ -5,9 +5,6 @@ const stockWatchJaAxios = axios.create({
     baseURL: process.env.VUE_APP_STOCK_WATCH_URL,
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        ...(localStorage.getItem('user') && {
-            Authorization: `Bearer ${localStorage.getItem('user')}`,
-        }),
     },
 });
 
@@ -24,7 +21,10 @@ export default class Stockwatch {
                     },
                 })
                 .then((response) => {
-                    localStorage.setItem('user', response.data.access_token);
+                    localStorage.setItem('user', `Bearer ${response.data.access_token}`);
+                    stockWatchJaAxios.defaults.headers.common[
+                        'Authorization'
+                    ] = `Bearer ${response.data.access_token}`;
                     resolve(response);
                 })
                 .catch((error) => {
@@ -60,12 +60,16 @@ export default class Stockwatch {
     }
 
     async getStockPerformance() {
-        return stockWatchJaAxios.get(`/investor/2/portfolio/1/performance/`);
+        return stockWatchJaAxios.get(`/investor/2/portfolio/1/performance/`, {
+            headers: { Authorization: localStorage.getItem('user') },
+        });
     }
 
     getInvestorId() {
         return stockWatchJaAxios
-            .get(`${process.env.VUE_APP_STOCK_WATCH_URL}/investor/get_id/`)
+            .get(`${process.env.VUE_APP_STOCK_WATCH_URL}/investor/get_id/`, {
+                headers: { Authorization: localStorage.getItem('user') },
+            })
             .then((response) => {
                 if (response.status === 200) {
                     console.log("Return Investor's Id");
@@ -79,10 +83,16 @@ export default class Stockwatch {
 
     createStock(symbol) {
         return stockWatchJaAxios
-            .post(`/investor/2/portfolio/1/stock/`, {
-                symbol: symbol,
-                status: 1,
-            })
+            .post(
+                `/investor/2/portfolio/1/stock/`,
+                {
+                    headers: { Authorization: localStorage.getItem('user') },
+                },
+                {
+                    symbol: symbol,
+                    status: 1,
+                }
+            )
             .then((response) => {
                 console.log('Added stock to portfolio.');
                 return response;
@@ -94,7 +104,9 @@ export default class Stockwatch {
 
     getStocks() {
         return stockWatchJaAxios
-            .get(`/investor/2/portfolio/1/stock/`)
+            .get(`/investor/2/portfolio/1/stock/`, {
+                headers: { Authorization: localStorage.getItem('user') },
+            })
             .then((response) => {
                 console.log('Get stocks.');
                 return response;
@@ -106,7 +118,9 @@ export default class Stockwatch {
 
     deleteStockBySymbol(symbol) {
         return stockWatchJaAxios
-            .delete(`/investor/2/portfolio/1/stock/${symbol}`)
+            .delete(`/investor/2/portfolio/1/stock/${symbol}`, {
+                headers: { Authorization: localStorage.getItem('user') },
+            })
             .then((response) => {
                 console.log('Deleted Stock.');
                 return response;
@@ -123,10 +137,14 @@ export default class Stockwatch {
                 {
                     symbol: symbol,
                 },
-                { headers: { 'Content-Type': 'application/json' } }
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: localStorage.getItem('user'),
+                    },
+                }
             )
             .then((response) => {
-                console.log('Added stock.');
                 return response;
             })
             .catch((error) => {
@@ -136,7 +154,9 @@ export default class Stockwatch {
 
     getSymbolTransactions(symbol) {
         return stockWatchJaAxios
-            .get(`/investor/2/portfolio/1/stock/${symbol}/transaction/`)
+            .get(`/investor/2/portfolio/1/stock/${symbol}/transaction/`, {
+                headers: { Authorization: localStorage.getItem('user') },
+            })
             .then((response) => {
                 console.log('Got Transactions.');
                 return response;
@@ -147,8 +167,15 @@ export default class Stockwatch {
     }
 
     createSymbolTransaction(payload) {
+        console.log('Create Trans');
         return stockWatchJaAxios
-            .post(`/investor/2/portfolio/1/stock/${payload.symbol}/transaction/`, payload)
+            .post(
+                `/investor/2/portfolio/1/stock/${payload.symbolName}/transaction/`,
+                {
+                    headers: { Authorization: localStorage.getItem('user') },
+                },
+                payload
+            )
             .then((response) => {
                 console.log('Added stock to transaction.');
                 return response;
@@ -160,7 +187,13 @@ export default class Stockwatch {
 
     updateSymbolTransaction(symbol, payload) {
         return stockWatchJaAxios
-            .put(`/investor/2/portfolio/1/stock/${symbol}/transaction/`, payload)
+            .put(
+                `/investor/2/portfolio/1/stock/${symbol}/transaction/`,
+                {
+                    headers: { Authorization: localStorage.getItem('user') },
+                },
+                payload
+            )
             .then((response) => {
                 console.log('Updated stock to transaction.');
                 return response;
@@ -172,7 +205,9 @@ export default class Stockwatch {
 
     deleteSymbolTransaction(symbol, transactionId) {
         return stockWatchJaAxios
-            .delete(`/investor/2/portfolio/1/stock/${symbol}/transaction/${transactionId}`)
+            .delete(`/investor/2/portfolio/1/stock/${symbol}/transaction/${transactionId}`, {
+                headers: { Authorization: localStorage.getItem('user') },
+            })
             .then((response) => {
                 console.log('Deleted Transactions.');
                 return response;

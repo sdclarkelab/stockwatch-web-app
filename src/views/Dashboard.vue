@@ -106,7 +106,7 @@ export default {
                     if (response.data) {
                         this.$messageService.displayToast(
                             'Successful',
-                            'danger',
+                            'success',
                             'Transaction Successfully Added!'
                         );
                         this.loadStockPerformance();
