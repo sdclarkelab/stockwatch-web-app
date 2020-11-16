@@ -84,8 +84,7 @@
                     </p>
                 </template>
             </Column>
-            <!-- <Column field="totalShares" header="Target Price"></Column>
-            <Column field="totalShares" header="Action"></Column> -->
+            <Column field="transaction_info.total_shares" header="Shares"></Column>
 
             <ColumnGroup type="footer">
                 <Row>

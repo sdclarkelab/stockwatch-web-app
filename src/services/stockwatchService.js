@@ -130,12 +130,40 @@ export default class Stockwatch {
             });
     }
 
-    createStockBySymbol(symbol) {
+    // createStockBySymbol(symbol) {
+    //     return stockWatchJaAxios
+    //         .post(
+    //             `/investor/2/portfolio/1/stock/`,
+    //             {
+    //                 symbol: symbol,
+    //             },
+    //             {
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                     Authorization: localStorage.getItem('user'),
+    //                 },
+    //             }
+    //         )
+    //         .then((response) => {
+    //             return response;
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //         });
+    // }
+
+    createStockBySymbol(transaction) {
         return stockWatchJaAxios
             .post(
-                `/investor/2/portfolio/1/stock/`,
+                `/investor/2/portfolio/1/stock_transaction`,
                 {
-                    symbol: symbol,
+                    stock: {
+                        symbol: transaction.symbolName,
+                        status: 1,
+                        portfolio: transaction.portfolio,
+                        status: 3,
+                    },
+                    transaction: transaction,
                 },
                 {
                     headers: {
@@ -214,6 +242,17 @@ export default class Stockwatch {
             })
             .catch((error) => {
                 console.log(error);
+            });
+    }
+
+    getStockNames() {
+        return stockWatchJaAxios
+            .get('/stockNames/', {
+                headers: { Authorization: localStorage.getItem('user') },
+            })
+            .then((res) => {
+                console.log('Got stock names.');
+                return res;
             });
     }
 }

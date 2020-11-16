@@ -88,40 +88,50 @@ export default {
             this.showAddTransactionDialog = false;
 
             await this.stockwatchService
-                .createStockBySymbol(transaction.symbolName)
+                .createStockBySymbol(transaction)
                 .then(() => {
                     this.$messageService.displayToast(
                         'Success',
                         'success',
                         'Stock Successfully Created!'
                     );
+                    this.loadStockPerformance();
                 })
                 .catch((error) => {
                     this.$messageService.displayToast('Error', 'danger', error);
                 });
 
-            this.stockwatchService
-                .createSymbolTransaction(transaction)
-                .then((response) => {
-                    if (response.data) {
-                        this.$messageService.displayToast(
-                            'Successful',
-                            'success',
-                            'Transaction Successfully Added!'
-                        );
-                        this.loadStockPerformance();
-                    }
-                })
-                .catch((error) => {
-                    this.$messageService.displayToast('Error', 'danger', error);
-                });
+            // this.stockwatchService
+            //     .createSymbolTransaction(transaction)
+            //     .then((response) => {
+            //         if (response.data) {
+            //             this.$messageService.displayToast(
+            //                 'Successful',
+            //                 'success',
+            //                 'Transaction Successfully Added!'
+            //             );
+            //             this.loadStockPerformance();
+            //         }
+            //     })
+            //     .catch((error) => {
+            //         this.$messageService.displayToast('Error', 'danger', error);
+            //     });
         },
         // ***************** Dashboard Table *****************
         getJSEStocks() {
-            this.jamStockExService
-                .getStocks('', 'symbol instrument_name')
-                .then((response) => {
-                    this.stockOptions = response.data.result;
+            // this.jamStockExService
+            //     .getStocks('', 'symbol instrument_name')
+            //     .then((response) => {
+            //         this.stockOptions = response.data.result;
+            //     })
+            //     .catch((error) => {
+            //         this.$messageService.displayToast('Error', 'danger', error);
+            //     });
+
+            this.stockwatchService
+                .getStockNames()
+                .then((res) => {
+                    this.stockOptions = res.data;
                 })
                 .catch((error) => {
                     this.$messageService.displayToast('Error', 'danger', error);

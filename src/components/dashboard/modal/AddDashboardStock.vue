@@ -92,6 +92,7 @@ export default {
                 price: 0,
                 shares: 0,
                 fees: 0,
+                portfolio: 1,
             };
         },
     },
