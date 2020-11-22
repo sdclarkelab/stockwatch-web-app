@@ -1,16 +1,15 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-import '@fortawesome/fontawesome-free/css/all.css'
-import '@fortawesome/fontawesome-free/js/all.js'
-
+import '@fortawesome/fontawesome-free/css/all.css';
+import '@fortawesome/fontawesome-free/js/all.js';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -36,21 +35,25 @@ Vue.component('Dialog', Dialog);
 Vue.component('InputNumber', InputNumber);
 Vue.component('Dropdown', Dropdown);
 
-import { ToastPlugin } from 'bootstrap-vue'
-Vue.use(ToastPlugin)
+import messageService from './services/messageService';
+
+Vue.prototype.$messageService = new messageService();
+
+import { ToastPlugin } from 'bootstrap-vue';
+Vue.use(ToastPlugin);
 
 // Install BootstrapVue
-Vue.use(BootstrapVue)
+Vue.use(BootstrapVue);
 // Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
+Vue.use(IconsPlugin);
 
 let formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumIntegerDigits: 2
-})
+    minimumIntegerDigits: 2,
+});
 
-Vue.filter('currency', function(value) {
+Vue.filter('currency', function (value) {
     if (Number.isFinite(parseFloat(value)) == false || Number.isNaN(value)) {
         return '$0.00';
     }
@@ -58,15 +61,14 @@ Vue.filter('currency', function(value) {
     return formatter.format(value);
 });
 
-Vue.filter('percent', function(value) {
+Vue.filter('percent', function (value) {
     if (!value || Number.isNaN(value)) {
         return `${0}%`;
     }
     return ((Number(value) * 100) / 100).toFixed(2) + '%';
 });
 
-
-new Vue({
-  render: h => h(App),
-  router
-}).$mount('#app')
+export const app = new Vue({
+    render: (h) => h(App),
+    router,
+}).$mount('#app');
