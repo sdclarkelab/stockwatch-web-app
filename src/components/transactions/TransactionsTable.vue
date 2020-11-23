@@ -37,7 +37,7 @@
             </Column>
         </DataTable>
 
-        <Dialog
+        <!-- <Dialog
             :visible.sync="showAddTransactionDialog"
             header="Transaction Details"
             :modal="true"
@@ -96,7 +96,18 @@
                     @click="saveTransaction"
                 />
             </template>
-        </Dialog>
+        </Dialog> -->
+
+        <create-stock-transaction-modal
+            v-if="showAddTransactionDialog"
+            :modal-name="modalName"
+            :stock-options="stockOptions || []"
+            :showModal="showAddTransactionDialog"
+            :isCreateTransactionOnly="isCreateTransactionOnly"
+            :action-options="actionOptions"
+            @onHideAddTransactionDialog="onHideAddTransactionDialog"
+            @onSaveStockAndTransaction="onSaveStockAndTransaction"
+        />
 
         <Dialog
             :visible.sync="showDeleteTransactionDialog"
@@ -127,8 +138,13 @@
 </template>
 
 <script>
+import CreateStockTransactionModal from '../common/modal/CreateStockTransactionModal';
+
 export default {
     name: 'TransactionsTable',
+    components: {
+        CreateStockTransactionModal,
+    },
     props: {
         symbolTransactions: Array,
         transactionLoading: Boolean,
@@ -136,6 +152,8 @@ export default {
     },
     data() {
         return {
+            isCreateTransactionOnly: true,
+            modalName: 'Create Transaction',
             transactions: this.symbolTransactions,
             transaction: {},
             showAddTransactionDialog: false,
@@ -155,7 +173,7 @@ export default {
             this.transaction = {};
             this.showAddTransactionDialog = true;
         },
-        hideDialog() {
+        onHideAddTransactionDialog() {
             this.showAddTransactionDialog = false;
         },
         confirmDeleteTransaction(transaction) {
@@ -168,7 +186,7 @@ export default {
             this.$emit('onDeleteTransaction', this.transaction.id);
             this.transaction = {};
         },
-        saveTransaction() {
+        onSaveStockAndTransaction() {
             this.showAddTransactionDialog = false;
 
             this.$emit('onSaveTransaction', this.transaction);

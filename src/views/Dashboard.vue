@@ -11,7 +11,7 @@
             </template>
         </Toolbar>
 
-        <add-dashboard-stock
+        <!-- <add-dashboard-stock
             v-if="showAddTransactionDialog"
             :action-options="actionOptions"
             :transaction="transaction"
@@ -19,7 +19,7 @@
             :show-add-transaction-dialog="showAddTransactionDialog"
             @onHideAddTransactionDialog="onHideAddTransactionDialog"
             @onSaveStockAndTransaction="onSaveStockAndTransaction"
-        />
+        /> -->
 
         <b-modal v-model="showTransTableModal" size="xl" :title="transTableModalTitle">
             <transactions-table
@@ -30,6 +30,17 @@
                 @onDeleteTransaction="onDeleteTransaction"
             />
         </b-modal>
+
+        <create-stock-transaction-modal
+            v-if="showAddTransactionDialog"
+            :modal-name="modalName"
+            :stock-options="stockOptions"
+            :showModal="showAddTransactionDialog"
+            isCreateTransactionOnly="false"
+            :action-options="actionOptions"
+            @onHideAddTransactionDialog="onHideAddTransactionDialog"
+            @onSaveStockAndTransaction="onSaveStockAndTransaction"
+        />
 
         <dashboard-table
             :stock-performances="stockPerformances"
@@ -44,7 +55,8 @@ import JamStockExService from '../services/jamStockExService';
 
 import DashboardTable from '../components/dashboard/DashboardTable';
 import TransactionsTable from '../components/transactions/TransactionsTable';
-import AddDashboardStock from '../components/dashboard/modal/AddDashboardStock';
+// import AddDashboardStock from '../components/dashboard/modal/AddDashboardStock';
+import CreateStockTransactionModal from '../components/common/modal/CreateStockTransactionModal';
 
 export default {
     name: 'Dashboard',
@@ -53,10 +65,12 @@ export default {
     components: {
         DashboardTable,
         TransactionsTable,
-        AddDashboardStock,
+        CreateStockTransactionModal,
+        // AddDashboardStock,
     },
     data() {
         return {
+            modalName: 'Create Stock and Transaction',
             actionOptions: ['buy', 'sell'],
             transTableModalTitle: '',
             stockPerformances: [],
