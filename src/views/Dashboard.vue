@@ -11,25 +11,27 @@
             </template>
         </Toolbar>
 
-        <add-dashboard-stock
-            v-if="showAddTransactionDialog"
-            :action-options="actionOptions"
-            :transaction="transaction"
-            :stock-options="stockOptions"
-            :show-add-transaction-dialog="showAddTransactionDialog"
-            @onHideAddTransactionDialog="onHideAddTransactionDialog"
-            @onSaveStockAndTransaction="onSaveStockAndTransaction"
-        />
-
         <b-modal v-model="showTransTableModal" size="xl" :title="transTableModalTitle">
             <transactions-table
                 :action-options="actionOptions"
                 :symbol-transactions="transactions"
                 :transaction-loading="transactionLoading"
+                :symbol-name="selectedSymbol"
                 @onSaveTransaction="onSaveTransaction"
                 @onDeleteTransaction="onDeleteTransaction"
             />
         </b-modal>
+
+        <create-stock-transaction-modal
+            v-if="showAddTransactionDialog"
+            :modal-name="modalName"
+            :stock-options="stockOptions"
+            :showModal="showAddTransactionDialog"
+            :isCreateTransactionOnly="isCreateTransactionOnly"
+            :action-options="actionOptions"
+            @onHideAddTransactionDialog="onHideAddTransactionDialog"
+            @onSaveStockAndTransaction="onSaveStockAndTransaction"
+        />
 
         <dashboard-table
             :stock-performances="stockPerformances"
@@ -44,7 +46,7 @@ import JamStockExService from '../services/jamStockExService';
 
 import DashboardTable from '../components/dashboard/DashboardTable';
 import TransactionsTable from '../components/transactions/TransactionsTable';
-import AddDashboardStock from '../components/dashboard/modal/AddDashboardStock';
+import CreateStockTransactionModal from '../components/common/modal/CreateStockTransactionModal';
 
 export default {
     name: 'Dashboard',
@@ -53,10 +55,12 @@ export default {
     components: {
         DashboardTable,
         TransactionsTable,
-        AddDashboardStock,
+        CreateStockTransactionModal,
     },
     data() {
         return {
+            isCreateTransactionOnly: false,
+            modalName: 'Create Stock and Transaction',
             actionOptions: ['buy', 'sell'],
             transTableModalTitle: '',
             stockPerformances: [],
@@ -66,6 +70,7 @@ export default {
             stockOptions: [],
             transactionLoading: false,
             showAddTransactionDialog: false,
+            selectedSymbol: '',
         };
     },
     created() {
@@ -100,34 +105,9 @@ export default {
                 .catch((error) => {
                     this.$messageService.displayToast('Error', 'danger', error);
                 });
-
-            // this.stockwatchService
-            //     .createSymbolTransaction(transaction)
-            //     .then((response) => {
-            //         if (response.data) {
-            //             this.$messageService.displayToast(
-            //                 'Successful',
-            //                 'success',
-            //                 'Transaction Successfully Added!'
-            //             );
-            //             this.loadStockPerformance();
-            //         }
-            //     })
-            //     .catch((error) => {
-            //         this.$messageService.displayToast('Error', 'danger', error);
-            //     });
         },
         // ***************** Dashboard Table *****************
         getJSEStocks() {
-            // this.jamStockExService
-            //     .getStocks('', 'symbol instrument_name')
-            //     .then((response) => {
-            //         this.stockOptions = response.data.result;
-            //     })
-            //     .catch((error) => {
-            //         this.$messageService.displayToast('Error', 'danger', error);
-            //     });
-
             this.stockwatchService
                 .getStockNames()
                 .then((res) => {
@@ -148,6 +128,7 @@ export default {
                 });
         },
         onShowTransTableModal(symbol) {
+            this.selectedSymbol = symbol;
             this.getSymbolTransactions(symbol);
             this.showTransTableModal = !this.showTransTableModal;
             this.transTableModalTitle = `${symbol} Transactions`;
@@ -206,7 +187,18 @@ export default {
                 });
         },
         onSaveTransaction(transaction) {
-            this.createSymbolTransaction(transaction);
+            this.stockwatchService.createSymbolTransaction(transaction).then((response) => {
+                if (response.data) {
+                    this.$bvToast.toast('Transaction Successfully Added!', {
+                        title: 'Successful',
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 5000,
+                    });
+
+                    this.getSymbolTransactions();
+                }
+            });
         },
         onDeleteTransaction(transactionId) {
             this.deleteSymbolTransactions(transactionId);

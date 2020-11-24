@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import Stockwatch from '../services/stockwatchService';
+import Stockwatch from '../../services/stockwatchService';
 
 export default {
     name: 'NavBar',
