@@ -8,7 +8,7 @@
         >
             <div class="p-formgrid p-grid">
                 <div class="p-field p-col" v-if="!isCreateTransactionOnly">
-                    <label for="price">Stocks</label>
+                    <label for="stocks">Stocks</label>
                     <b-form-select
                         v-model="transaction.symbolName"
                         :options="symbolNameOptions"
@@ -16,7 +16,8 @@
                         value-field="symbol"
                     />
                 </div>
-                <div class="p-field p-col">
+                <div class="p-field p-col" v-if="isCreateTransactionOnly">
+                    <label for="action">Action</label>
                     <b-form-radio-group
                         id="stock-action-radio-group"
                         v-model="transaction.action"
@@ -76,6 +77,7 @@ export default {
         showModal: Boolean,
         isCreateTransactionOnly: Boolean,
         actionOptions: Array,
+        TransSymbolName: String,
     },
     data() {
         return {
@@ -88,8 +90,8 @@ export default {
     methods: {
         getDefaultTransaction() {
             return {
-                symbolName: '',
-                action: '',
+                symbolName: this.isCreateTransactionOnly ? this.TransSymbolName : '',
+                action: 'buy',
                 price: 0,
                 shares: 0,
                 fees: 0,
