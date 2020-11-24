@@ -37,66 +37,16 @@
             </Column>
         </DataTable>
 
-        <Dialog
-            :visible.sync="showAddTransactionDialog"
-            header="Transaction Details"
-            :modal="true"
-            class="p-fluid"
-        >
-            <div class="p-formgrid p-grid">
-                <div class="p-field p-col">
-                    <Dropdown
-                        v-model="transaction.action"
-                        :options="actionOptions"
-                        placeholder="Select an action"
-                    />
-                </div>
-                <div class="p-field p-col">
-                    <label for="price">Price</label>
-                    <InputNumber
-                        id="price"
-                        v-model="transaction.price"
-                        mode="currency"
-                        currency="USD"
-                        locale="en-US"
-                    />
-                </div>
-                <div class="p-field p-col">
-                    <label for="shares">Shares</label>
-                    <InputNumber
-                        id="shares"
-                        v-model="transaction.shares"
-                        mode="currency"
-                        currency="USD"
-                        locale="en-US"
-                    />
-                </div>
-                <div class="p-field p-col">
-                    <label for="fees">Fees</label>
-                    <InputNumber
-                        id="fees"
-                        v-model="transaction.fees"
-                        mode="currency"
-                        currency="USD"
-                        locale="en-US"
-                    />
-                </div>
-            </div>
-            <template #footer>
-                <Button
-                    label="Cancel"
-                    icon="pi pi-times"
-                    class="p-button-text"
-                    @click="hideDialog"
-                />
-                <Button
-                    label="Save"
-                    icon="pi pi-check"
-                    class="p-button-text"
-                    @click="saveTransaction"
-                />
-            </template>
-        </Dialog>
+        <create-stock-transaction-modal
+            v-if="showAddTransactionDialog"
+            :modal-name="modalName"
+            :showModal="showAddTransactionDialog"
+            :isCreateTransactionOnly="isCreateTransactionOnly"
+            :action-options="actionOptions"
+            :trans-symbol-name="symbolName"
+            @onHideAddTransactionDialog="onHideAddTransactionDialog"
+            @onSaveStockAndTransaction="onSaveStockAndTransaction"
+        />
 
         <Dialog
             :visible.sync="showDeleteTransactionDialog"
@@ -127,15 +77,23 @@
 </template>
 
 <script>
+import CreateStockTransactionModal from '../common/modal/CreateStockTransactionModal';
+
 export default {
     name: 'TransactionsTable',
+    components: {
+        CreateStockTransactionModal,
+    },
     props: {
         symbolTransactions: Array,
         transactionLoading: Boolean,
         actionOptions: Array,
+        symbolName: String,
     },
     data() {
         return {
+            isCreateTransactionOnly: true,
+            modalName: 'Create Transaction',
             transactions: this.symbolTransactions,
             transaction: {},
             showAddTransactionDialog: false,
@@ -155,7 +113,7 @@ export default {
             this.transaction = {};
             this.showAddTransactionDialog = true;
         },
-        hideDialog() {
+        onHideAddTransactionDialog() {
             this.showAddTransactionDialog = false;
         },
         confirmDeleteTransaction(transaction) {
@@ -168,10 +126,10 @@ export default {
             this.$emit('onDeleteTransaction', this.transaction.id);
             this.transaction = {};
         },
-        saveTransaction() {
+        onSaveStockAndTransaction(transaction) {
             this.showAddTransactionDialog = false;
 
-            this.$emit('onSaveTransaction', this.transaction);
+            this.$emit('onSaveTransaction', transaction);
             this.transaction = {};
         },
     },
