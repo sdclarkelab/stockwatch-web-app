@@ -180,9 +180,9 @@ export default class Stockwatch {
             });
     }
 
-    getSymbolTransactions(symbol) {
+    getSymbolTransactions(symbolId) {
         return stockWatchJaAxios
-            .get(`/investor/2/portfolio/1/stock/${symbol}/transaction/`, {
+            .get(`/investor/2/portfolio/1/stock/${symbolId}/transaction/`, {
                 headers: { Authorization: localStorage.getItem('user') },
             })
             .then((response) => {
