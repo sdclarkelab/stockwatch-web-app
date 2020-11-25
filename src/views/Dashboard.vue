@@ -127,17 +127,17 @@ export default {
                     this.$messageService.displayToast('Error', 'danger', error);
                 });
         },
-        onShowTransTableModal(symbol) {
+        onShowTransTableModal(symbol, symbolId) {
             this.selectedSymbol = symbol;
-            this.getSymbolTransactions(symbol);
+            this.getSymbolTransactions(symbolId);
             this.showTransTableModal = !this.showTransTableModal;
             this.transTableModalTitle = `${symbol} Transactions`;
         },
         // ***************** Transaction *****************
-        getSymbolTransactions(symbol) {
+        getSymbolTransactions(symbolId) {
             this.transactionLoading = true;
             this.stockwatchService
-                .getSymbolTransactions(symbol)
+                .getSymbolTransactions(symbolId)
                 .then((response) => {
                     this.transactions = response.data;
                     this.transactionLoading = false;
