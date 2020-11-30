@@ -69,6 +69,8 @@
 </template>
 
 <script>
+import _ from 'lodash';
+
 export default {
     name: 'CreateStockTransactionModal',
     props: {
@@ -77,7 +79,7 @@ export default {
         showModal: Boolean,
         isCreateTransactionOnly: Boolean,
         actionOptions: Array,
-        TransSymbolName: String,
+        selectedTransStock: Object,
     },
     data() {
         return {
@@ -85,17 +87,17 @@ export default {
             symbolNameOptions: [],
             transaction: this.getDefaultTransaction(),
             showCreateStockTransactionModal: this.showModal,
+            transStock: this.selectedTransStock,
         };
     },
     methods: {
         getDefaultTransaction() {
             return {
-                symbolName: this.isCreateTransactionOnly ? this.TransSymbolName : '',
+                stock: _.get(this.selectedTransStock, 'id') || '',
                 action: 'buy',
                 price: 0,
                 shares: 0,
                 fees: 0,
-                portfolio: 1,
             };
         },
         onSaveStockAndTransaction() {
@@ -111,6 +113,10 @@ export default {
         },
         stockOptions() {
             this.symbolNameOptions = this.stockOptions;
+        },
+        selectedTransStock(stock) {
+            this.transStock = stock;
+            this.transaction.stock = _.get(this.transStock, 'id');
         },
     },
 };

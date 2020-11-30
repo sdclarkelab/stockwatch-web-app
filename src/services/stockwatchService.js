@@ -195,11 +195,12 @@ export default class Stockwatch {
     }
 
     createSymbolTransaction(payload) {
-        console.log('Create Trans');
-        console.log(payload);
         return stockWatchJaAxios
-            .post(`/investor/2/portfolio/1/stock/${payload.symbolName}/transaction/`, payload, {
-                headers: { Authorization: localStorage.getItem('user') },
+            .post(`/investor/2/portfolio/1/stock/${payload.stock}/transaction/`, payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: localStorage.getItem('user'),
+                },
             })
             .then((response) => {
                 console.log('Added stock to transaction.');

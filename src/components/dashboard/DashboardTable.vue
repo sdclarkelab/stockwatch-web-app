@@ -110,9 +110,7 @@
             </ColumnGroup>
             <Column>
                 <template #body="slotProps">
-                    <b-button
-                        @click="onShowTransTableModal(slotProps.data.symbol, slotProps.data.id)"
-                    >
+                    <b-button @click="onShowTransTableModal(slotProps.data)">
                         <i class="fa fa-university" aria-hidden="true" />
                     </b-button>
                 </template>
@@ -179,8 +177,8 @@ export default {
     },
     mounted() {},
     methods: {
-        onShowTransTableModal(symbol, symbolId) {
-            this.$emit('onShowTransTableModal', symbol, symbolId);
+        onShowTransTableModal(stock) {
+            this.$emit('onShowTransTableModal', stock);
         },
         adjustColor(value) {
             return value < 0 ? 'font-weight: bold;color:red' : 'font-weight: bold;color:green';
