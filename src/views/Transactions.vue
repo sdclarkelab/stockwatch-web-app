@@ -42,7 +42,7 @@ export default {
         },
         createSymbolTransaction(transaction) {
             this.stockwatchService
-                .createSymbolTransaction(this.symbol, transaction)
+                .createSymbolTransaction(transaction)
                 .then((response) => {
                     if (response.data) {
                         this.$bvToast.toast('Transaction Successfully Added!', {

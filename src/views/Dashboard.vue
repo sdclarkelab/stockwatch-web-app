@@ -16,7 +16,7 @@
                 :action-options="actionOptions"
                 :symbol-transactions="transactions"
                 :transaction-loading="transactionLoading"
-                :symbol-name="selectedSymbol"
+                :selected-stock="selectedStock"
                 @onSaveTransaction="onSaveTransaction"
                 @onDeleteTransaction="onDeleteTransaction"
             />
@@ -70,7 +70,7 @@ export default {
             stockOptions: [],
             transactionLoading: false,
             showAddTransactionDialog: false,
-            selectedSymbol: '',
+            selectedStock: '',
         };
     },
     created() {
@@ -127,17 +127,17 @@ export default {
                     this.$messageService.displayToast('Error', 'danger', error);
                 });
         },
-        onShowTransTableModal(symbol) {
-            this.selectedSymbol = symbol;
-            this.getSymbolTransactions(symbol);
+        onShowTransTableModal(stock) {
+            this.selectedStock = stock;
+            this.getSymbolTransactions(stock.id);
             this.showTransTableModal = !this.showTransTableModal;
-            this.transTableModalTitle = `${symbol} Transactions`;
+            this.transTableModalTitle = `${stock.symbol} Transactions`;
         },
         // ***************** Transaction *****************
-        getSymbolTransactions(symbol) {
+        getSymbolTransactions(symbolId) {
             this.transactionLoading = true;
             this.stockwatchService
-                .getSymbolTransactions(symbol)
+                .getSymbolTransactions(symbolId)
                 .then((response) => {
                     this.transactions = response.data;
                     this.transactionLoading = false;
@@ -148,7 +148,7 @@ export default {
         },
         createSymbolTransaction(transaction) {
             this.stockwatchService
-                .createSymbolTransaction(this.symbol, transaction)
+                .createSymbolTransaction(transaction)
                 .then((response) => {
                     if (response.data) {
                         this.$bvToast.toast('Transaction Successfully Added!', {
@@ -158,8 +158,17 @@ export default {
                             autoHideDelay: 5000,
                         });
 
-                        this.getSymbolTransactions();
+                        this.getSymbolTransactions(transaction.stock);
                     }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.$bvToast.toast('Error!', {
+                        title: 'Error',
+                        variant: 'danger',
+                        solid: true,
+                        autoHideDelay: 5000,
+                    });
                 });
         },
         updateSymbolTransaction() {
@@ -187,18 +196,7 @@ export default {
                 });
         },
         onSaveTransaction(transaction) {
-            this.stockwatchService.createSymbolTransaction(transaction).then((response) => {
-                if (response.data) {
-                    this.$bvToast.toast('Transaction Successfully Added!', {
-                        title: 'Successful',
-                        variant: 'success',
-                        solid: true,
-                        autoHideDelay: 5000,
-                    });
-
-                    this.getSymbolTransactions();
-                }
-            });
+            this.createSymbolTransaction(transaction);
         },
         onDeleteTransaction(transactionId) {
             this.deleteSymbolTransactions(transactionId);

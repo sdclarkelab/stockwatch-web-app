@@ -158,9 +158,8 @@ export default class Stockwatch {
                 `/investor/2/portfolio/1/stock_transaction`,
                 {
                     stock: {
+                        portfolio: 1,
                         symbol: transaction.symbolName,
-                        status: 1,
-                        portfolio: transaction.portfolio,
                         status: 3,
                     },
                     transaction: transaction,
@@ -180,9 +179,9 @@ export default class Stockwatch {
             });
     }
 
-    getSymbolTransactions(symbol) {
+    getSymbolTransactions(symbolId) {
         return stockWatchJaAxios
-            .get(`/investor/2/portfolio/1/stock/${symbol}/transaction/`, {
+            .get(`/investor/2/portfolio/1/stock/${symbolId}/transaction/`, {
                 headers: { Authorization: localStorage.getItem('user') },
             })
             .then((response) => {
@@ -195,11 +194,12 @@ export default class Stockwatch {
     }
 
     createSymbolTransaction(payload) {
-        console.log('Create Trans');
-        console.log(payload);
         return stockWatchJaAxios
-            .post(`/investor/2/portfolio/1/stock/${payload.symbolName}/transaction/`, payload, {
-                headers: { Authorization: localStorage.getItem('user') },
+            .post(`/investor/2/portfolio/1/stock/${payload.stock}/transaction/`, payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: localStorage.getItem('user'),
+                },
             })
             .then((response) => {
                 console.log('Added stock to transaction.');
