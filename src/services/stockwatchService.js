@@ -158,9 +158,8 @@ export default class Stockwatch {
                 `/investor/2/portfolio/1/stock_transaction`,
                 {
                     stock: {
+                        portfolio: 1,
                         symbol: transaction.symbolName,
-                        status: 1,
-                        portfolio: transaction.portfolio,
                         status: 3,
                     },
                     transaction: transaction,
