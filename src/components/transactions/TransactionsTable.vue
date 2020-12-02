@@ -43,7 +43,7 @@
             :showModal="showAddTransactionDialog"
             :isCreateTransactionOnly="isCreateTransactionOnly"
             :action-options="actionOptions"
-            :trans-symbol-name="symbolName"
+            :selected-trans-stock="selectedStock"
             @onHideAddTransactionDialog="onHideAddTransactionDialog"
             @onSaveStockAndTransaction="onSaveStockAndTransaction"
         />
@@ -88,7 +88,7 @@ export default {
         symbolTransactions: Array,
         transactionLoading: Boolean,
         actionOptions: Array,
-        symbolName: String,
+        selectedStock: Object,
     },
     data() {
         return {
