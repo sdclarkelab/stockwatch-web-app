@@ -93,8 +93,7 @@ export default {
     methods: {
         getDefaultTransaction() {
             return {
-                stock: _.get(this.selectedTransStock, 'id') || '',
-                action: 'buy',
+                action: 2,
                 price: 0,
                 shares: 0,
                 fees: 0,
