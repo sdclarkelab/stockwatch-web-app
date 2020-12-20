@@ -87,7 +87,6 @@ export default {
             symbolNameOptions: [],
             transaction: this.getDefaultTransaction(),
             showCreateStockTransactionModal: this.showModal,
-            transStock: this.selectedTransStock,
         };
     },
     methods: {
@@ -97,6 +96,7 @@ export default {
                 price: 0,
                 shares: 0,
                 fees: 0,
+                stock: _.get(this.selectedTransStock, 'id'),
             };
         },
         onSaveStockAndTransaction() {
@@ -114,8 +114,7 @@ export default {
             this.symbolNameOptions = this.stockOptions;
         },
         selectedTransStock(stock) {
-            this.transStock = stock;
-            this.transaction.stock = _.get(this.transStock, 'id');
+            this.transaction.stock = _.get(stock, 'id');
         },
     },
 };

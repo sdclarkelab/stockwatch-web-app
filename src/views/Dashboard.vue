@@ -61,7 +61,10 @@ export default {
         return {
             isCreateTransactionOnly: false,
             modalName: 'Create Stock and Transaction',
-            actionOptions: ['buy', 'sell'],
+            actionOptions: [
+                { text: 'buy', value: 2 },
+                { text: 'sell', value: 1 },
+            ],
             transTableModalTitle: '',
             stockPerformances: [],
             showTransTableModal: false,
