@@ -116,7 +116,7 @@ export default {
         },
         selectedTransStock(stock) {
             this.transaction.stock = _.get(stock, 'id');
-            this.transaction.total_shares = _.get(stock, 'transaction_info.total_shares', '')
+            this.transaction.total_shares = _.get(stock, 'transaction_info.total_shares', '');
         },
     },
 };
