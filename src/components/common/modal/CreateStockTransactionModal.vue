@@ -97,6 +97,7 @@ export default {
                 shares: 0,
                 fees: 0,
                 stock: _.get(this.selectedTransStock, 'id'),
+                total_shares: _.get(this.selectedTransStock, 'transaction_info.total_shares', ''),
             };
         },
         onSaveStockAndTransaction() {
@@ -115,6 +116,7 @@ export default {
         },
         selectedTransStock(stock) {
             this.transaction.stock = _.get(stock, 'id');
+            this.transaction.total_shares = _.get(stock, 'transaction_info.total_shares', '')
         },
     },
 };
