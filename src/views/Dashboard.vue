@@ -61,7 +61,10 @@ export default {
         return {
             isCreateTransactionOnly: false,
             modalName: 'Create Stock and Transaction',
-            actionOptions: ['buy', 'sell'],
+            actionOptions: [
+                { text: 'buy', value: 2 },
+                { text: 'sell', value: 1 },
+            ],
             transTableModalTitle: '',
             stockPerformances: [],
             showTransTableModal: false,
@@ -176,9 +179,9 @@ export default {
                 this.transactions = response.data;
             });
         },
-        deleteSymbolTransactions(transactionId) {
+        deleteSymbolTransactions(transactionId, stockId) {
             this.stockwatchService
-                .deleteSymbolTransaction(this.symbol, transactionId)
+                .deleteSymbolTransaction(stockId, transactionId)
                 .then((response) => {
                     if (response.data) {
                         this.$bvToast.toast('Transaction Successfully Deleted.', {
@@ -188,7 +191,7 @@ export default {
                             autoHideDelay: 5000,
                         });
 
-                        this.getSymbolTransactions();
+                        this.getSymbolTransactions(stockId);
                     }
                 })
                 .catch((error) => {
@@ -198,8 +201,8 @@ export default {
         onSaveTransaction(transaction) {
             this.createSymbolTransaction(transaction);
         },
-        onDeleteTransaction(transactionId) {
-            this.deleteSymbolTransactions(transactionId);
+        onDeleteTransaction(transactionId, stockId) {
+            this.deleteSymbolTransactions(transactionId, stockId);
         },
         onViewTransaction(symbol) {
             this.$router.push({ path: `symbol/${symbol}/transaction` });

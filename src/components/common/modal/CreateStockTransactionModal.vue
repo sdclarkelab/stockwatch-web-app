@@ -87,17 +87,17 @@ export default {
             symbolNameOptions: [],
             transaction: this.getDefaultTransaction(),
             showCreateStockTransactionModal: this.showModal,
-            transStock: this.selectedTransStock,
         };
     },
     methods: {
         getDefaultTransaction() {
             return {
-                stock: _.get(this.selectedTransStock, 'id') || '',
-                action: 'buy',
+                action: 2,
                 price: 0,
                 shares: 0,
                 fees: 0,
+                stock: _.get(this.selectedTransStock, 'id'),
+                total_shares: _.get(this.selectedTransStock, 'transaction_info.total_shares', ''),
             };
         },
         onSaveStockAndTransaction() {
@@ -115,8 +115,8 @@ export default {
             this.symbolNameOptions = this.stockOptions;
         },
         selectedTransStock(stock) {
-            this.transStock = stock;
-            this.transaction.stock = _.get(this.transStock, 'id');
+            this.transaction.stock = _.get(stock, 'id');
+            this.transaction.total_shares = _.get(stock, 'transaction_info.total_shares', '');
         },
     },
 };

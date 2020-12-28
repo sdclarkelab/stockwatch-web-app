@@ -160,7 +160,6 @@ export default class Stockwatch {
                     stock: {
                         portfolio: 1,
                         symbol: transaction.symbolName,
-                        status: 3,
                     },
                     transaction: transaction,
                 },
@@ -228,9 +227,9 @@ export default class Stockwatch {
             });
     }
 
-    deleteSymbolTransaction(symbol, transactionId) {
+    deleteSymbolTransaction(symbolId, transactionId) {
         return stockWatchJaAxios
-            .delete(`/investor/2/portfolio/1/stock/${symbol}/transaction/${transactionId}`, {
+            .delete(`/investor/2/portfolio/1/stock/${symbolId}/transaction/${transactionId}/`, {
                 headers: { Authorization: localStorage.getItem('user') },
             })
             .then((response) => {
