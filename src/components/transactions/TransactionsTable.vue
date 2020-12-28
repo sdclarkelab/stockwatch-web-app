@@ -123,7 +123,7 @@ export default {
         deleteTransaction() {
             this.showDeleteTransactionDialog = false;
 
-            this.$emit('onDeleteTransaction', this.transaction.id);
+            this.$emit('onDeleteTransaction', this.transaction.id, this.selectedStock.id);
             this.transaction = {};
         },
         onSaveStockAndTransaction(transaction) {
