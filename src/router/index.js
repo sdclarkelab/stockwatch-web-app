@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Dashboard from '../views/Dashboard.vue';
-import Transaction from '../views/Transactions.vue';
-import Stocks from '../views/Stocks.vue';
+// import Transaction from '../views/Transactions.vue';
+// import Stocks from '../views/Stocks.vue';
 import Login from '../views/Login.vue';
 
 Vue.use(VueRouter);
