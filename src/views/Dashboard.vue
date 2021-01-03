@@ -144,6 +144,7 @@ export default {
                 .then((response) => {
                     this.transactions = response.data;
                     this.transactionLoading = false;
+                    this.loadStockPerformance();
                 })
                 .catch((error) => {
                     this.$messageService.displayToast('Error', 'danger', error);
