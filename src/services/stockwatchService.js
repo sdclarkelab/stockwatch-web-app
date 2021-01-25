@@ -59,8 +59,17 @@ export default class Stockwatch {
             });
     }
 
-    async getStockPerformance() {
-        return stockWatchJaAxios.get(`/investor/2/portfolio/1/performance/`, {
+    async getStockPerformance(portfolioId) {
+        return stockWatchJaAxios.get(`/investor/2/portfolio/${portfolioId}/performance/`, {
+            headers: { Authorization: localStorage.getItem('user') },
+        });
+    }
+
+    /**
+     * Gets default portfolio Id
+     */
+    async getDefaultPortfolioId() {
+        return stockWatchJaAxios.get(`/investor/2/portfolio/default/`, {
             headers: { Authorization: localStorage.getItem('user') },
         });
     }
