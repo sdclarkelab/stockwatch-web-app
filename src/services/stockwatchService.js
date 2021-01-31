@@ -15,7 +15,7 @@ stockWatchJaAxios.interceptors.request.use((config) => {
     return config;
 });
 
-const investorId = sessionStorage.getItem('investorId') || null;
+let investorId = sessionStorage.getItem('investorId') || null;
 let portfolioId = sessionStorage.getItem('portfolioId') || null;
 
 export default class Stockwatch {
@@ -83,6 +83,7 @@ export default class Stockwatch {
      * Gets default portfolio Id
      */
     async getDefaultPortfolioId() {
+        investorId = sessionStorage.getItem('investorId') || null;
         return stockWatchJaAxios
             .get(`/investor/${investorId}/portfolio/default/`)
             .then((response) => {
