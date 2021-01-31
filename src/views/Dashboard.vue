@@ -82,6 +82,7 @@ export default {
         this.jamStockExService = new JamStockExService();
     },
     async mounted() {
+        console.log('in dashboard');
         this.portfolioId = await this.getDefaultPortfolioId();
         this.loadStockPerformance(this.portfolioId);
     },

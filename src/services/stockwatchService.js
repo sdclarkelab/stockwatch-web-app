@@ -21,14 +21,15 @@ export default class Stockwatch {
                     },
                 })
                 .then((response) => {
-                    localStorage.setItem('user', `Bearer ${response.data.access_token}`);
+                    localStorage.setItem('token', `Bearer ${response.data.access_token}`);
+                    localStorage.setItem('investorId', response.data.investor.id);
                     stockWatchJaAxios.defaults.headers.common[
                         'Authorization'
                     ] = `Bearer ${response.data.access_token}`;
                     resolve(response);
                 })
                 .catch((error) => {
-                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
                     reject(error);
                 });
         });
@@ -36,7 +37,7 @@ export default class Stockwatch {
 
     logout() {
         const formData = {
-            token: localStorage.getItem('user'),
+            token: localStorage.getItem('token'),
         };
 
         return stockWatchJaAxios
@@ -48,7 +49,7 @@ export default class Stockwatch {
             })
             .then((response) => {
                 if (response.status === 200) {
-                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
                     console.log('Successfully Logged Out');
                     return response;
                 }
@@ -61,7 +62,7 @@ export default class Stockwatch {
 
     async getStockPerformance(portfolioId) {
         return stockWatchJaAxios.get(`/investor/2/portfolio/${portfolioId}/performance/`, {
-            headers: { Authorization: localStorage.getItem('user') },
+            headers: { Authorization: localStorage.getItem('token') },
         });
     }
 
@@ -69,15 +70,22 @@ export default class Stockwatch {
      * Gets default portfolio Id
      */
     async getDefaultPortfolioId() {
-        return stockWatchJaAxios.get(`/investor/2/portfolio/default/`, {
-            headers: { Authorization: localStorage.getItem('user') },
-        });
+        return stockWatchJaAxios
+            .get(`/investor/2/portfolio/default/`, {
+                headers: { Authorization: localStorage.getItem('token') },
+            })
+            .then((response) => {
+                localStorage.setItem('portfolioId', response.data.portfolioId);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     getInvestorId() {
         return stockWatchJaAxios
             .get(`${process.env.VUE_APP_STOCK_WATCH_URL}/investor/get_id/`, {
-                headers: { Authorization: localStorage.getItem('user') },
+                headers: { Authorization: localStorage.getItem('token') },
             })
             .then((response) => {
                 if (response.status === 200) {
@@ -95,7 +103,7 @@ export default class Stockwatch {
             .post(
                 `/investor/2/portfolio/1/stock/`,
                 {
-                    headers: { Authorization: localStorage.getItem('user') },
+                    headers: { Authorization: localStorage.getItem('token') },
                 },
                 {
                     symbol: symbol,
@@ -114,7 +122,7 @@ export default class Stockwatch {
     getStocks() {
         return stockWatchJaAxios
             .get(`/investor/2/portfolio/1/stock/`, {
-                headers: { Authorization: localStorage.getItem('user') },
+                headers: { Authorization: localStorage.getItem('token') },
             })
             .then((response) => {
                 console.log('Get stocks.');
@@ -128,7 +136,7 @@ export default class Stockwatch {
     deleteStockBySymbol(symbol) {
         return stockWatchJaAxios
             .delete(`/investor/2/portfolio/1/stock/${symbol}`, {
-                headers: { Authorization: localStorage.getItem('user') },
+                headers: { Authorization: localStorage.getItem('token') },
             })
             .then((response) => {
                 console.log('Deleted Stock.');
@@ -149,7 +157,7 @@ export default class Stockwatch {
     //             {
     //                 headers: {
     //                     'Content-Type': 'application/json',
-    //                     Authorization: localStorage.getItem('user'),
+    //                     Authorization: localStorage.getItem('token'),
     //                 },
     //             }
     //         )
@@ -175,7 +183,7 @@ export default class Stockwatch {
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: localStorage.getItem('user'),
+                        Authorization: localStorage.getItem('token'),
                     },
                 }
             )
@@ -190,7 +198,7 @@ export default class Stockwatch {
     getSymbolTransactions(symbolId) {
         return stockWatchJaAxios
             .get(`/investor/2/portfolio/1/stock/${symbolId}/transaction/`, {
-                headers: { Authorization: localStorage.getItem('user') },
+                headers: { Authorization: localStorage.getItem('token') },
             })
             .then((response) => {
                 console.log('Got Transactions.');
@@ -206,7 +214,7 @@ export default class Stockwatch {
             .post(`/investor/2/portfolio/1/stock/${payload.stock}/transaction/`, payload, {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: localStorage.getItem('user'),
+                    Authorization: localStorage.getItem('token'),
                 },
             })
             .then((response) => {
@@ -223,7 +231,7 @@ export default class Stockwatch {
             .put(
                 `/investor/2/portfolio/1/stock/${symbol}/transaction/`,
                 {
-                    headers: { Authorization: localStorage.getItem('user') },
+                    headers: { Authorization: localStorage.getItem('token') },
                 },
                 payload
             )
@@ -239,7 +247,7 @@ export default class Stockwatch {
     deleteSymbolTransaction(symbolId, transactionId) {
         return stockWatchJaAxios
             .delete(`/investor/2/portfolio/1/stock/${symbolId}/transaction/${transactionId}/`, {
-                headers: { Authorization: localStorage.getItem('user') },
+                headers: { Authorization: localStorage.getItem('token') },
             })
             .then((response) => {
                 console.log('Deleted Transactions.');
@@ -253,7 +261,7 @@ export default class Stockwatch {
     getStockNames() {
         return stockWatchJaAxios
             .get('/stockNames/', {
-                headers: { Authorization: localStorage.getItem('user') },
+                headers: { Authorization: localStorage.getItem('token') },
             })
             .then((res) => {
                 console.log('Got stock names.');
