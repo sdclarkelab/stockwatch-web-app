@@ -49,6 +49,10 @@
                         locale="en-US"
                     />
                 </div>
+                <div class="p-field p-col" v-if="modalName != 'Create Transaction'">
+                    <label for="target_percentage">Target Sell Percentage</label>
+                    <InputNumber id="target_percentage" v-model="transaction.target_percentage" />
+                </div>
             </div>
             <template #footer>
                 <Button
@@ -98,6 +102,10 @@ export default {
                 fees: 0,
                 stock: _.get(this.selectedTransStock, 'id'),
                 total_shares: _.get(this.selectedTransStock, 'transaction_info.total_shares', ''),
+                ...(this.modalName != 'Create Transaction' && { target_percentage: 5 }),
+                ...(this.modalName == 'Create Transaction' && {
+                    plan_id: _.get(this.selectedTransStock, 'plan.id', ''),
+                }),
             };
         },
         onSaveStockAndTransaction() {
