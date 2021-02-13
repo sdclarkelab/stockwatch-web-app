@@ -85,6 +85,21 @@
                 </template>
             </Column>
             <Column field="transaction_info.total_shares" header="Shares"></Column>
+            <Column field="plan.target_sell_price" header="Target Sell Price"></Column>
+            <Column field="plan.status" header="Status">
+                <template #body="slotProps">
+                    <span
+                        v-if="slotProps.data.plan.status == 1"
+                        :class="'status-badge status-' + slotProps.data.plan.status"
+                        >SELL</span
+                    >
+                    <span
+                        v-if="slotProps.data.plan.status == 3"
+                        :class="'status-badge status-' + slotProps.data.plan.status"
+                        >HOLD</span
+                    >
+                </template>
+            </Column>
 
             <ColumnGroup type="footer">
                 <Row>

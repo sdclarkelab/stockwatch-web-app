@@ -74,14 +74,17 @@ export default {
             transactionLoading: false,
             showAddTransactionDialog: false,
             selectedStock: '',
+            portfolioId: '',
         };
     },
     created() {
         this.stockwatchService = new Stockwatch();
         this.jamStockExService = new JamStockExService();
     },
-    mounted() {
-        this.loadStockPerformance();
+    async mounted() {
+        console.log('in dashboard');
+        this.portfolioId = await this.getDefaultPortfolioId();
+        this.loadStockPerformance(this.portfolioId);
     },
     methods: {
         // ***************** Dashboard Stock *****************
@@ -120,9 +123,19 @@ export default {
                     this.$messageService.displayToast('Error', 'danger', error);
                 });
         },
-        loadStockPerformance() {
+        async getDefaultPortfolioId() {
+            return await this.stockwatchService
+                .getDefaultPortfolioId()
+                .then((response) => {
+                    return response.data.portfolio_id;
+                })
+                .catch((error) => {
+                    this.$messageService.displayToast('Error', 'danger', error);
+                });
+        },
+        loadStockPerformance(portfolioId) {
             this.stockwatchService
-                .getStockPerformance()
+                .getStockPerformance(portfolioId)
                 .then((response) => {
                     this.stockPerformances = response.data;
                 })
