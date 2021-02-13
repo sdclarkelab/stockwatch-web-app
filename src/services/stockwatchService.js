@@ -192,6 +192,9 @@ export default class Stockwatch {
                         symbol: transaction.symbolName,
                     },
                     transaction: transaction,
+                    plan: {
+                        target_percentage: transaction.target_percentage,
+                    },
                 },
                 {
                     headers: {
