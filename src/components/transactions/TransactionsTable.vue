@@ -6,7 +6,7 @@
                     label="New"
                     icon="pi pi-plus"
                     class="p-button-success p-mr-2"
-                    @click="openNew"
+                    @click="openTransactionModal"
                 />
             </template>
         </Toolbar>
@@ -30,7 +30,7 @@
                     <Button
                         icon="pi pi-pencil"
                         class="p-button-rounded p-button-success p-mr-2"
-                        @click="editProduct(slotProps.data)"
+                        @click="openTransactionModal(slotProps.data)"
                     />
                     <Button
                         icon="pi pi-trash"
@@ -48,6 +48,7 @@
             :isCreateTransactionOnly="isCreateTransactionOnly"
             :action-options="actionOptions"
             :selected-trans-stock="selectedStock"
+            :edit-transaction="editTransaction"
             @onHideAddTransactionDialog="onHideAddTransactionDialog"
             @onSaveStockAndTransaction="onSaveStockAndTransaction"
         />
@@ -103,7 +104,7 @@ export default {
             showAddTransactionDialog: false,
             showDeleteTransactionDialog: false,
             selectedTransactions: null,
-            isEditTransaction: false,
+            editTransaction: {},
         };
     },
     watch: {
@@ -114,7 +115,8 @@ export default {
     created() {},
     mounted() {},
     methods: {
-        openNew() {
+        openTransactionModal(editTransaction) {
+            this.editTransaction = editTransaction;
             this.transaction = {};
             this.showAddTransactionDialog = true;
         },

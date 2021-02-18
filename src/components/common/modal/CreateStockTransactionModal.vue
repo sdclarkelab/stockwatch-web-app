@@ -84,12 +84,23 @@ export default {
         isCreateTransactionOnly: Boolean,
         actionOptions: Array,
         selectedTransStock: Object,
+        editTransaction: Object,
+    },
+    mounted() {
+        if (this.editTransaction) {
+            // TODO: clean price values from string to floats
+            this.transaction = this.editTransaction;
+        } else {
+            // TODO: set as watcher.
+            // !showing mouseEvent when creating transaction
+            this.transaction = this.getDefaultTransaction();
+        }
     },
     data() {
         return {
             selectedStock: '',
             symbolNameOptions: [],
-            transaction: this.getDefaultTransaction(),
+            transaction: {},
             showCreateStockTransactionModal: this.showModal,
         };
     },
