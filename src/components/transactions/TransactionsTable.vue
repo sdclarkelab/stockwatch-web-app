@@ -27,7 +27,11 @@
             <Column field="net_price" header="Price" />
             <Column>
                 <template #body="slotProps">
-                    <!-- <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" @click="editProduct(slotProps.data)" /> -->
+                    <Button
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-success p-mr-2"
+                        @click="editProduct(slotProps.data)"
+                    />
                     <Button
                         icon="pi pi-trash"
                         class="p-button-rounded p-button-warning"
@@ -99,6 +103,7 @@ export default {
             showAddTransactionDialog: false,
             showDeleteTransactionDialog: false,
             selectedTransactions: null,
+            isEditTransaction: false,
         };
     },
     watch: {
