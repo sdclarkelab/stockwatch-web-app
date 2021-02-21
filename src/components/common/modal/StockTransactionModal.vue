@@ -1,7 +1,7 @@
 <template>
     <div>
         <Dialog
-            :visible.sync="showCreateStockTransactionModal"
+            :visible.sync="showstockTransactionModal"
             :header="modalName"
             :modal="true"
             class="p-fluid"
@@ -59,7 +59,7 @@
                     label="Cancel"
                     icon="pi pi-times"
                     class="p-button-text"
-                    @click="hideCreateStockTransactionModal"
+                    @click="hidestockTransactionModal"
                 />
                 <Button
                     label="Save"
@@ -76,7 +76,7 @@
 import _ from 'lodash';
 
 export default {
-    name: 'CreateStockTransactionModal',
+    name: 'stockTransactionModal',
     props: {
         modalName: String,
         stockOptions: Array,
@@ -101,7 +101,7 @@ export default {
             selectedStock: '',
             symbolNameOptions: [],
             transaction: {},
-            showCreateStockTransactionModal: this.showModal,
+            showstockTransactionModal: this.showModal,
         };
     },
     methods: {
@@ -122,13 +122,13 @@ export default {
         onSaveStockAndTransaction() {
             this.$emit('onSaveStockAndTransaction', this.transaction);
         },
-        hideCreateStockTransactionModal() {
+        hidestockTransactionModal() {
             this.$emit('onHideAddTransactionDialog');
         },
     },
     watch: {
         showModal() {
-            this.showCreateStockTransactionModal = this.showModal;
+            this.showstockTransactionModal = this.showModal;
         },
         stockOptions() {
             this.symbolNameOptions = this.stockOptions;

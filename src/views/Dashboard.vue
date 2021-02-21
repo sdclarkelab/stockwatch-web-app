@@ -22,7 +22,7 @@
             />
         </b-modal>
 
-        <create-stock-transaction-modal
+        <stock-transaction-modal
             v-if="showAddTransactionDialog"
             :modal-name="modalName"
             :stock-options="stockOptions"
@@ -46,7 +46,7 @@ import JamStockExService from '../services/jamStockExService';
 
 import DashboardTable from '../components/dashboard/DashboardTable';
 import TransactionsTable from '../components/transactions/TransactionsTable';
-import CreateStockTransactionModal from '../components/common/modal/CreateStockTransactionModal';
+import stockTransactionModal from '../components/common/modal/StockTransactionModal';
 
 export default {
     name: 'Dashboard',
@@ -55,7 +55,7 @@ export default {
     components: {
         DashboardTable,
         TransactionsTable,
-        CreateStockTransactionModal,
+        stockTransactionModal,
     },
     data() {
         return {

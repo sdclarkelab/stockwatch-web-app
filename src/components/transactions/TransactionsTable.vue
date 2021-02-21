@@ -41,7 +41,7 @@
             </Column>
         </DataTable>
 
-        <create-stock-transaction-modal
+        <stock-transaction-modal
             v-if="showAddTransactionDialog"
             :modal-name="modalName"
             :showModal="showAddTransactionDialog"
@@ -82,12 +82,12 @@
 </template>
 
 <script>
-import CreateStockTransactionModal from '../common/modal/CreateStockTransactionModal';
+import stockTransactionModal from '../common/modal/StockTransactionModal';
 
 export default {
     name: 'TransactionsTable',
     components: {
-        CreateStockTransactionModal,
+        stockTransactionModal,
     },
     props: {
         symbolTransactions: Array,
