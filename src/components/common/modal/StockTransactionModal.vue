@@ -1,13 +1,8 @@
 <template>
     <div>
-        <Dialog
-            :visible.sync="showstockTransactionModal"
-            :header="modalName"
-            :modal="true"
-            class="p-fluid"
-        >
+        <Dialog :visible.sync="showModal" :header="modalName" :modal="true" class="p-fluid">
             <div class="p-formgrid p-grid">
-                <div class="p-field p-col" v-if="!isCreateTransactionOnly">
+                <div class="p-field p-col" v-if="showStockDDL">
                     <label for="stocks">Stocks</label>
                     <b-form-select
                         v-model="transaction.symbolName"
@@ -16,7 +11,7 @@
                         value-field="symbol"
                     />
                 </div>
-                <div class="p-field p-col" v-if="isCreateTransactionOnly">
+                <div class="p-field p-col" v-if="showActionRadioBtn">
                     <label for="action">Action</label>
                     <b-form-radio-group
                         id="stock-action-radio-group"
@@ -49,7 +44,7 @@
                         locale="en-US"
                     />
                 </div>
-                <div class="p-field p-col" v-if="modalName != 'Create Transaction'">
+                <div class="p-field p-col" v-if="showTargetPercentage">
                     <label for="target_percentage">Target Sell Percentage</label>
                     <InputNumber id="target_percentage" v-model="transaction.target_percentage" />
                 </div>
@@ -62,7 +57,7 @@
                     @click="hidestockTransactionModal"
                 />
                 <Button
-                    label="Save"
+                    :label="saveBtnText"
                     icon="pi pi-check"
                     class="p-button-text"
                     @click="onSaveStockAndTransaction"
@@ -74,34 +69,35 @@
 
 <script>
 import _ from 'lodash';
+import Stockwatch from '../../../services/stockwatchService';
 
 export default {
-    name: 'stockTransactionModal',
+    name: 'StockTransactionModal',
+    stockwatchService: null,
     props: {
-        modalName: String,
-        stockOptions: Array,
-        showModal: Boolean,
-        isCreateTransactionOnly: Boolean,
-        actionOptions: Array,
+        modalType: String,
+        showstockTransactionModal: Boolean,
         selectedTransStock: Object,
         editTransaction: Object,
     },
-    mounted() {
-        if (this.editTransaction) {
-            // TODO: clean price values from string to floats
-            this.transaction = this.editTransaction;
-        } else {
-            // TODO: set as watcher.
-            // !showing mouseEvent when creating transaction
-            this.transaction = this.getDefaultTransaction();
-        }
+    created() {
+        this.stockwatchService = new Stockwatch();
     },
     data() {
         return {
+            actionOptions: [
+                { text: 'buy', value: 2 },
+                { text: 'sell', value: 1 },
+            ],
             selectedStock: '',
             symbolNameOptions: [],
-            transaction: {},
-            showstockTransactionModal: this.showModal,
+            transaction: this.getDefaultTransaction(),
+            showModal: this.showstockTransactionModal,
+            showStockDDL: false,
+            showActionRadioBtn: false,
+            showTargetPercentage: false,
+            saveBtnText: '',
+            modalName: '',
         };
     },
     methods: {
@@ -120,22 +116,67 @@ export default {
             };
         },
         onSaveStockAndTransaction() {
-            this.$emit('onSaveStockAndTransaction', this.transaction);
+            if (this.modalType === 'createStock' || this.modalType === 'createTransaction') {
+                this.$emit('onSaveStockAndTransaction', this.transaction);
+            } else {
+                this.$emit('onEditStockAndTransaction', this.transaction);
+            }
         },
         hidestockTransactionModal() {
             this.$emit('onHideAddTransactionDialog');
         },
+        getJSEStocks() {
+            this.stockwatchService
+                .getStockNames()
+                .then((res) => {
+                    this.symbolNameOptions = res.data;
+                })
+                .catch((error) => {
+                    this.$messageService.displayToast('Error', 'danger', error);
+                });
+        },
+        configModal() {
+            switch (this.modalType) {
+                case 'createStock':
+                    this.modalName = 'Create Stock and Transaction';
+                    this.getJSEStocks();
+                    this.showStockDDL = true;
+                    this.saveBtnText = 'Save Stock';
+                    this.showTargetPercentage = true;
+                    break;
+                case 'createTransaction':
+                    this.modalName = 'Create Transcation';
+                    this.showActionRadioBtn = true;
+                    this.saveBtnText = 'Save Transaction';
+                    break;
+                case 'editTransaction':
+                    this.modalName = 'Edit Transcation';
+                    this.showActionRadioBtn = true;
+                    this.saveBtnText = 'Update Transaction';
+                    break;
+            }
+        },
+        cleanTransaction(transaction) {
+            transaction.price = parseFloat(transaction.price);
+            transaction.fees = parseFloat(transaction.fees);
+            transaction.share = parseFloat(transaction.share);
+            return transaction;
+        },
     },
     watch: {
-        showModal() {
-            this.showstockTransactionModal = this.showModal;
-        },
-        stockOptions() {
-            this.symbolNameOptions = this.stockOptions;
+        showstockTransactionModal() {
+            this.showModal = this.showstockTransactionModal;
+            if (this.showstockTransactionModal) {
+                this.configModal();
+            }
         },
         selectedTransStock(stock) {
             this.transaction.stock = _.get(stock, 'id');
             this.transaction.total_shares = _.get(stock, 'transaction_info.total_shares', '');
+        },
+        editTransaction() {
+            let rawTransaction = this.editTransaction;
+            this.transaction = this.cleanTransaction(rawTransaction);
         },
     },
 };

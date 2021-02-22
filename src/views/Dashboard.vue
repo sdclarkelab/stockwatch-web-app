@@ -13,22 +13,18 @@
 
         <b-modal v-model="showTransTableModal" size="xl" :title="transTableModalTitle">
             <transactions-table
-                :action-options="actionOptions"
                 :symbol-transactions="transactions"
                 :transaction-loading="transactionLoading"
                 :selected-stock="selectedStock"
                 @onSaveTransaction="onSaveTransaction"
+                @onEditTransaction="onEditTransaction"
                 @onDeleteTransaction="onDeleteTransaction"
             />
         </b-modal>
 
         <stock-transaction-modal
-            v-if="showAddTransactionDialog"
-            :modal-name="modalName"
-            :stock-options="stockOptions"
-            :showModal="showAddTransactionDialog"
-            :isCreateTransactionOnly="isCreateTransactionOnly"
-            :action-options="actionOptions"
+            :modalType="modalTypeTxt"
+            :showstockTransactionModal="showAddTransactionDialog"
             @onHideAddTransactionDialog="onHideAddTransactionDialog"
             @onSaveStockAndTransaction="onSaveStockAndTransaction"
         />
@@ -59,12 +55,6 @@ export default {
     },
     data() {
         return {
-            isCreateTransactionOnly: false,
-            modalName: 'Create Stock and Transaction',
-            actionOptions: [
-                { text: 'buy', value: 2 },
-                { text: 'sell', value: 1 },
-            ],
             transTableModalTitle: '',
             stockPerformances: [],
             showTransTableModal: false,
@@ -75,6 +65,7 @@ export default {
             showAddTransactionDialog: false,
             selectedStock: '',
             portfolioId: '',
+            modalTypeTxt: 'createStock',
         };
     },
     created() {
@@ -90,7 +81,6 @@ export default {
         // ***************** Dashboard Stock *****************
         onAddStockAndTransaction() {
             this.showAddTransactionDialog = true;
-            this.getJSEStocks();
         },
         onHideAddTransactionDialog() {
             this.showAddTransactionDialog = false;
@@ -113,16 +103,6 @@ export default {
                 });
         },
         // ***************** Dashboard Table *****************
-        getJSEStocks() {
-            this.stockwatchService
-                .getStockNames()
-                .then((res) => {
-                    this.stockOptions = res.data;
-                })
-                .catch((error) => {
-                    this.$messageService.displayToast('Error', 'danger', error);
-                });
-        },
         async getDefaultPortfolioId() {
             return await this.stockwatchService
                 .getDefaultPortfolioId()
@@ -188,6 +168,31 @@ export default {
                     });
                 });
         },
+        updateTransaction(transaction) {
+            this.stockwatchService
+                .updateTransaction(transaction)
+                .then((response) => {
+                    if (response.data) {
+                        this.$bvToast.toast('Transaction Successfully Updated!', {
+                            title: 'Successful',
+                            variant: 'success',
+                            solid: true,
+                            autoHideDelay: 5000,
+                        });
+
+                        this.getSymbolTransactions(transaction.stock);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.$bvToast.toast('Error!', {
+                        title: 'Error',
+                        variant: 'danger',
+                        solid: true,
+                        autoHideDelay: 5000,
+                    });
+                });
+        },
         updateSymbolTransaction() {
             this.stockwatchService.updateSymbolTransaction(this.symbol).then((response) => {
                 this.transactions = response.data;
@@ -214,6 +219,9 @@ export default {
         },
         onSaveTransaction(transaction) {
             this.createSymbolTransaction(transaction);
+        },
+        onEditTransaction(transaction) {
+            this.updateTransaction(transaction);
         },
         onDeleteTransaction(transactionId, stockId) {
             this.deleteSymbolTransactions(transactionId, stockId);
