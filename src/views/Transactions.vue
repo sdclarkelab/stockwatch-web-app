@@ -3,6 +3,7 @@
         <transactions-table
             :transactions="transactions"
             @onSaveTransaction="onSaveTransaction"
+            @onEditTransaction="onEditTransaction"
             @onDeleteTransaction="onDeleteTransaction"
         />
         <b-button variant="info" to="/dashboard"> Back </b-button>
@@ -23,7 +24,6 @@ export default {
     data() {
         return {
             transactions: [],
-            actionOptions: ['buy', 'sell'],
             symbol: '',
         };
     },
@@ -46,6 +46,31 @@ export default {
                 .then((response) => {
                     if (response.data) {
                         this.$bvToast.toast('Transaction Successfully Added!', {
+                            title: 'Successful',
+                            variant: 'success',
+                            solid: true,
+                            autoHideDelay: 5000,
+                        });
+
+                        this.getSymbolTransactions();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.$bvToast.toast('Error!', {
+                        title: 'Error',
+                        variant: 'danger',
+                        solid: true,
+                        autoHideDelay: 5000,
+                    });
+                });
+        },
+        updateTransaction(transaction) {
+            this.stockwatchService
+                .updateTransaction(transaction)
+                .then((response) => {
+                    if (response.data) {
+                        this.$bvToast.toast('Transaction Successfully Updated!', {
                             title: 'Successful',
                             variant: 'success',
                             solid: true,
@@ -91,6 +116,10 @@ export default {
         },
         onSaveTransaction(transaction) {
             this.createSymbolTransaction(transaction);
+        },
+        onEditTransaction(transaction) {
+            console.log('onEditTransaction -> trans');
+            this.updateTransaction(transaction);
         },
         onDeleteTransaction(transactionId) {
             this.deleteSymbolTransactions(transactionId);
