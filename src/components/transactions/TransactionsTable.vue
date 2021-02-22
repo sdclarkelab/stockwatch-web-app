@@ -6,7 +6,7 @@
                     label="New"
                     icon="pi pi-plus"
                     class="p-button-success p-mr-2"
-                    @click="openNew"
+                    @click="openTransactionModal('createTransaction')"
                 />
             </template>
         </Toolbar>
@@ -27,7 +27,11 @@
             <Column field="net_price" header="Price" />
             <Column>
                 <template #body="slotProps">
-                    <!-- <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" @click="editProduct(slotProps.data)" /> -->
+                    <Button
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-success p-mr-2"
+                        @click="openTransactionModal('editTransaction', slotProps.data)"
+                    />
                     <Button
                         icon="pi pi-trash"
                         class="p-button-rounded p-button-warning"
@@ -37,15 +41,13 @@
             </Column>
         </DataTable>
 
-        <create-stock-transaction-modal
-            v-if="showAddTransactionDialog"
-            :modal-name="modalName"
-            :showModal="showAddTransactionDialog"
-            :isCreateTransactionOnly="isCreateTransactionOnly"
-            :action-options="actionOptions"
-            :selected-trans-stock="selectedStock"
+        <stock-transaction-modal
+            :modalType="modalTypeTxt"
+            :showstockTransactionModal="showAddTransactionDialog"
+            :editTransaction="editTransaction"
             @onHideAddTransactionDialog="onHideAddTransactionDialog"
             @onSaveStockAndTransaction="onSaveStockAndTransaction"
+            @onEditStockAndTransaction="onEditStockAndTransaction"
         />
 
         <Dialog
@@ -77,17 +79,16 @@
 </template>
 
 <script>
-import CreateStockTransactionModal from '../common/modal/CreateStockTransactionModal';
+import stockTransactionModal from '../common/modal/StockTransactionModal';
 
 export default {
     name: 'TransactionsTable',
     components: {
-        CreateStockTransactionModal,
+        stockTransactionModal,
     },
     props: {
         symbolTransactions: Array,
         transactionLoading: Boolean,
-        actionOptions: Array,
         selectedStock: Object,
     },
     data() {
@@ -99,6 +100,8 @@ export default {
             showAddTransactionDialog: false,
             showDeleteTransactionDialog: false,
             selectedTransactions: null,
+            modalTypeTxt: '',
+            editTransaction: {},
         };
     },
     watch: {
@@ -109,9 +112,11 @@ export default {
     created() {},
     mounted() {},
     methods: {
-        openNew() {
+        openTransactionModal(modalTxt, rowTransaction = {}) {
+            this.editTransaction = rowTransaction;
             this.transaction = {};
             this.showAddTransactionDialog = true;
+            this.modalTypeTxt = modalTxt;
         },
         onHideAddTransactionDialog() {
             this.showAddTransactionDialog = false;
@@ -130,6 +135,11 @@ export default {
             this.showAddTransactionDialog = false;
 
             this.$emit('onSaveTransaction', transaction);
+            this.transaction = {};
+        },
+        onEditStockAndTransaction(transaction) {
+            this.showAddTransactionDialog = false;
+            this.$emit('onEditTransaction', transaction);
             this.transaction = {};
         },
     },

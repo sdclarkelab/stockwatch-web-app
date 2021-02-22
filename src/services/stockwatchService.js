@@ -249,6 +249,27 @@ export default class Stockwatch {
             });
     }
 
+    updateTransaction(payload) {
+        return stockWatchJaAxios
+            .put(
+                `/investor/${investorId}/portfolio/${portfolioId}/stock/${payload.stock}/transaction/${payload.id}/`,
+                payload,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: sessionStorage.getItem('token'),
+                    },
+                }
+            )
+            .then((response) => {
+                console.log('Updated transaction.');
+                return response;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
     updateSymbolTransaction(symbol, payload) {
         return stockWatchJaAxios
             .put(
