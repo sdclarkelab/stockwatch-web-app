@@ -315,4 +315,21 @@ export default class Stockwatch {
                 return res;
             });
     }
+
+    uploadJmmbCsv(file) {
+        var bodyFormData = new FormData();
+        bodyFormData.append('file', file);
+
+        return stockWatchJaAxios
+            .post(`/investor/${investorId}/portfolio/${portfolioId}/import/jmmb`, bodyFormData, {
+                headers: {
+                    Authorization: sessionStorage.getItem('token'),
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            .then((res) => {
+                console.log('Got stock names.');
+                return res;
+            });
+    }
 }

@@ -3,6 +3,9 @@ import App from './App.vue';
 import router from './router';
 
 Vue.config.productionTip = false;
+import PrimeVue from 'primevue/config';
+
+Vue.use(PrimeVue);
 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -10,6 +13,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
+
+import 'primeflex/primeflex.css';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
