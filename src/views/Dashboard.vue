@@ -1,12 +1,22 @@
 <template>
     <div class="container-fluid">
         <Toolbar class="p-mb-4">
-            <template slot="left">
+            <template #left>
                 <Button
                     label="Add Stock"
                     icon="pi pi-plus"
-                    class="p-button-success p-mr-2"
+                    class="p-mr-2"
                     @click="onAddStockAndTransaction"
+                />
+
+                <FileUpload
+                    mode="basic"
+                    name="demo[]"
+                    chooseLabel="Upload JMMB CSV"
+                    :customUpload="true"
+                    @uploader="myUploader"
+                    class="p-fileupload-success p-mr-2"
+                    :auto="true"
                 />
             </template>
         </Toolbar>
@@ -78,6 +88,24 @@ export default {
         this.loadStockPerformance(this.portfolioId);
     },
     methods: {
+        async myUploader(event) {
+            //event.files == files to upload
+            console.log(event.files[0]);
+            await this.stockwatchService
+                .uploadJmmbCsv(event.files[0])
+                .then(() => {
+                    this.$messageService.displayToast(
+                        'Success',
+                        'success',
+                        'File Successfully Uploaded!'
+                    );
+                    this.loadStockPerformance();
+                })
+                .catch((error) => {
+                    this.$messageService.displayToast('Error', 'danger', error);
+                });
+            event.files = [];
+        },
         // ***************** Dashboard Stock *****************
         onAddStockAndTransaction() {
             this.showAddTransactionDialog = true;
