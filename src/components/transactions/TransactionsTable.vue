@@ -43,6 +43,7 @@
 
         <stock-transaction-modal
             :modalType="modalTypeTxt"
+            :selectedTransStock="selectedStock"
             :showstockTransactionModal="showAddTransactionDialog"
             :editTransaction="editTransaction"
             @onHideAddTransactionDialog="onHideAddTransactionDialog"

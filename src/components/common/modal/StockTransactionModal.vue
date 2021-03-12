@@ -91,7 +91,7 @@ export default {
             ],
             selectedStock: '',
             symbolNameOptions: [],
-            transaction: this.getDefaultTransaction(),
+            transaction: {},
             showModal: this.showstockTransactionModal,
             showStockDDL: false,
             showActionRadioBtn: false,
@@ -109,8 +109,8 @@ export default {
                 fees: 0,
                 stock: _.get(this.selectedTransStock, 'id'),
                 total_shares: _.get(this.selectedTransStock, 'transaction_info.total_shares', ''),
-                ...(this.modalName != 'Create Transaction' && { target_percentage: 5 }),
-                ...(this.modalName == 'Create Transaction' && {
+                ...(this.modalType != 'createTransaction' && { target_percentage: 5 }),
+                ...(this.modalType == 'createTransaction' && {
                     plan_id: _.get(this.selectedTransStock, 'plan.id', ''),
                 }),
             };
@@ -123,6 +123,7 @@ export default {
             }
         },
         hidestockTransactionModal() {
+            this.transaction = {};
             this.$emit('onHideAddTransactionDialog');
         },
         getJSEStocks() {
@@ -148,11 +149,14 @@ export default {
                     this.modalName = 'Create Transcation';
                     this.showActionRadioBtn = true;
                     this.saveBtnText = 'Save Transaction';
+                    this.transaction = this.getDefaultTransaction();
                     break;
                 case 'editTransaction':
                     this.modalName = 'Edit Transcation';
                     this.showActionRadioBtn = true;
                     this.saveBtnText = 'Update Transaction';
+                    let rawTransaction = this.editTransaction;
+                    this.transaction = this.cleanTransaction(rawTransaction);
                     break;
             }
         },
@@ -174,10 +178,10 @@ export default {
             this.transaction.stock = _.get(stock, 'id');
             this.transaction.total_shares = _.get(stock, 'transaction_info.total_shares', '');
         },
-        editTransaction() {
-            let rawTransaction = this.editTransaction;
-            this.transaction = this.cleanTransaction(rawTransaction);
-        },
+        // editTransaction() {
+        //     let rawTransaction = this.editTransaction;
+        //     this.transaction = this.cleanTransaction(rawTransaction);
+        // },
     },
 };
 </script>
