@@ -144,6 +144,7 @@ export default {
                     this.showStockDDL = true;
                     this.saveBtnText = 'Save Stock';
                     this.showTargetPercentage = true;
+                    this.transaction = this.getDefaultTransaction();
                     break;
                 case 'createTransaction':
                     this.modalName = 'Create Transcation';
