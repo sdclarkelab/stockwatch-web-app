@@ -85,7 +85,11 @@
                 </template>
             </Column>
             <Column field="transaction_info.total_shares" header="Shares"></Column>
-            <Column field="plan.target_sell_price" header="Target Sell Price"></Column>
+            <Column field="plan.target_sell_price" header="Target Sell Price">
+                <template #body="slotProps">
+                    {{ slotProps.data.plan.target_sell_price | currency }}
+                </template>
+            </Column>
             <Column field="plan.status" header="Status">
                 <template #body="slotProps">
                     <span
