@@ -17,14 +17,44 @@
             :loading="transactionLoading"
         >
             <Column selection-mode="multiple" header-style="width: 3rem" />
-            <Column field="last_updated_date" header="Date" />
-            <Column field="action" header="Action" />
-            <Column field="price" header="Price" />
+            <Column field="last_updated_date" header="Date">
+                <template #body="slotProps">
+                    {{ slotProps.data.last_updated_date | date }}
+                </template>
+            </Column>
+            <Column field="action" header="Action">
+                <template #body="slotProps">
+                    <p :style="adjustActionColor(mapAction(slotProps.data.action))">
+                        {{ mapAction(slotProps.data.action) }}
+                    </p>
+                </template>
+            </Column>
             <Column field="shares" header="Shares" />
-            <Column field="fees" header="Fee" />
-            <Column field="gross_amount" header="Gross Amount" />
-            <Column field="net_amount" header="Net Amount" />
-            <Column field="net_price" header="Price" />
+            <Column field="price" header="Price">
+                <template #body="slotProps">
+                    {{ slotProps.data.price | currency }}
+                </template>
+            </Column>
+            <Column field="fees" header="Fee">
+                <template #body="slotProps">
+                    {{ slotProps.data.fees | currency }}
+                </template>
+            </Column>
+            <Column field="gross_amount" header="Gross Amount">
+                <template #body="slotProps">
+                    {{ slotProps.data.gross_amount | currency }}
+                </template>
+            </Column>
+            <Column field="net_amount" header="Net Amount">
+                <template #body="slotProps">
+                    {{ slotProps.data.net_amount | currency }}
+                </template>
+            </Column>
+            <Column field="net_price" header="Net Price">
+                <template #body="slotProps">
+                    {{ slotProps.data.net_price | currency }}
+                </template>
+            </Column>
             <Column>
                 <template #body="slotProps">
                     <Button
@@ -113,6 +143,9 @@ export default {
     created() {},
     mounted() {},
     methods: {
+        mapAction(value) {
+            return value === 1 ? 'SELL' : 'BUY';
+        },
         openTransactionModal(modalTxt, rowTransaction = {}) {
             this.editTransaction = rowTransaction;
             this.transaction = {};
@@ -142,6 +175,11 @@ export default {
             this.showAddTransactionDialog = false;
             this.$emit('onEditTransaction', transaction);
             this.transaction = {};
+        },
+        adjustActionColor(value) {
+            return value === 'BUY'
+                ? 'font-weight: bold;color:blue'
+                : 'font-weight: bold;color:green';
         },
     },
 };

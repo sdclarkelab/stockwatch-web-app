@@ -15,25 +15,7 @@
         >
             <Column field="symbol" header="Stock Code" :sortable="true" />
 
-            <Column
-                field="market_position.market_price"
-                header="Market Price"
-                body-style="background-color:#e0e0e0"
-            >
-                <template #body="slotProps">
-                    {{ slotProps.data.market_position.market_price | currency }}
-                </template>
-            </Column>
-
-            <Column
-                field="market_position.market_value"
-                header="Market Value"
-                body-style="background-color:#e0e0e0"
-            >
-                <template #body="slotProps">
-                    {{ slotProps.data.market_position.market_value | currency }}
-                </template>
-            </Column>
+            <Column field="transaction_info.total_shares" header="Shares" />
 
             <Column field="transaction_info.avg_net_price" header="Average Price">
                 <template #body="slotProps">
@@ -41,9 +23,9 @@
                 </template>
             </Column>
 
-            <Column field="transaction_info.total_net_amount" header="Average Net Amount">
+            <Column field="plan.target_sell_price" header="Target Sell Price">
                 <template #body="slotProps">
-                    {{ slotProps.data.transaction_info.total_net_amount | currency }}
+                    {{ slotProps.data.plan.target_sell_price | currency }}
                 </template>
             </Column>
 
@@ -53,22 +35,10 @@
                 </template>
             </Column>
 
-            <Column field="stock_weight.market" header="Market Value Weight %" :sortable="true">
-                <template #body="slotProps">
-                    <ProgressBar :value="slotProps.data.stock_weight.market" :show-value="true" />
-                </template>
-            </Column>
-
-            <Column field="stock_weight.owned" header="Units owned Weight %" :sortable="true">
-                <template #body="slotProps">
-                    <ProgressBar :value="slotProps.data.stock_weight.owned" :show-value="true" />
-                </template>
-            </Column>
-
             <Column field="performance.profit_loss_value" header="Profit/Loss" :sortable="true">
                 <template #body="slotProps">
                     <p :style="adjustColor(slotProps.data.performance.profit_loss_value)">
-                        {{ slotProps.data.performance.profit_loss_value }}
+                        {{ slotProps.data.performance.profit_loss_value | currency }}
                     </p>
                 </template>
             </Column>
@@ -84,12 +54,7 @@
                     </p>
                 </template>
             </Column>
-            <Column field="transaction_info.total_shares" header="Shares"></Column>
-            <Column field="plan.target_sell_price" header="Target Sell Price">
-                <template #body="slotProps">
-                    {{ slotProps.data.plan.target_sell_price | currency }}
-                </template>
-            </Column>
+
             <Column field="plan.status" header="Status">
                 <template #body="slotProps">
                     <span
@@ -105,26 +70,70 @@
                 </template>
             </Column>
 
+            <Column field="transaction_info.total_net_amount" header="Average Net Amount">
+                <template #body="slotProps">
+                    {{ slotProps.data.transaction_info.total_net_amount | currency }}
+                </template>
+            </Column>
+
+            <Column field="stock_weight.owned" header="Units owned Weight %" :sortable="true">
+                <template #body="slotProps">
+                    <ProgressBar :value="slotProps.data.stock_weight.owned">
+                        {{ slotProps.data.stock_weight.owned | percent }}
+                    </ProgressBar>
+                </template>
+            </Column>
+
+            <Column
+                field="stock_weight.market"
+                header="Market Value Weight %"
+                headerStyle="background-color:#FEFFB1"
+                bodyStyle="background-color:#FEFFB1"
+                :sortable="true"
+            >
+                <template #body="slotProps">
+                    <ProgressBar :value="slotProps.data.stock_weight.market">
+                        {{ slotProps.data.stock_weight.market | percent }}
+                    </ProgressBar>
+                </template>
+            </Column>
+
+            <Column
+                field="market_position.market_price"
+                header="Market Price"
+                headerStyle="background-color:#FEFFB1"
+                bodyStyle="background-color:#FEFFB1"
+            >
+                <template #body="slotProps">
+                    {{ slotProps.data.market_position.market_price | currency }}
+                </template>
+            </Column>
+
+            <Column
+                field="market_position.market_value"
+                header="Market Value"
+                headerStyle="background-color:#FEFFB1"
+                bodyStyle="background-color:#FEFFB1"
+            >
+                <template #body="slotProps">
+                    {{ slotProps.data.market_position.market_value | currency }}
+                </template>
+            </Column>
+
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="Totals:" :colspan="1" />
-                    <Column :colspan="1" footer-style="background-color:#e0e0e0" />
-                    <Column
-                        :footer="marketPriceTotal | currency"
-                        footer-style="background-color:#e0e0e0"
-                    />
-                    <Column :colspan="1" />
-                    <Column :footer="totalNetAmount | currency" />
+                    <Column footer="Totals:" :colspan="4" />
                     <Column :footer="currentValueTotal | currency" />
-                    <Column :colspan="2" />
                     <Column
                         :footer="profitTotal() | currency"
                         :footer-style="adjustColor(profitTotal())"
                     />
                     <Column
-                        :footer="profitPercentage() | percent"
-                        :footer-style="adjustColor(profitPercentage())"
+                        :footer="avgProfitLostPercentage | percent"
+                        :footer-style="adjustColor(avgProfitLostPercentage)"
+                        :colspan="2"
                     />
+                    <Column :footer="totalNetAmount | currency" />
                 </Row>
             </ColumnGroup>
             <Column>
@@ -189,6 +198,15 @@ export default {
 
             return total;
         },
+        avgProfitLostPercentage() {
+            var total = 0;
+
+            for (let stockPerformance of this.stockPerformances) {
+                total += stockPerformance.performance.profit_loss_percentage;
+            }
+
+            return total / this.stockPerformances.length;
+        },
     },
     created() {
         this.stockwatchService = new Stockwatch();
@@ -207,12 +225,12 @@ export default {
         },
         profitTotal() {
             var total = 0;
-            total = this.currentValueTotal - this.marketPriceTotal;
+            total = this.marketPriceTotal - this.currentValueTotal;
             return total;
         },
         profitPercentage() {
             var total = 0;
-            total = (this.currentValueTotal - this.marketPriceTotal) / this.currentValueTotal;
+            total = (this.marketPriceTotal - this.currentValueTotal) / this.currentValueTotal;
             return total;
         },
     },
