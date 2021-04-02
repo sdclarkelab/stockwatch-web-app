@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
+import moment from 'moment';
 
 Vue.config.productionTip = false;
 import PrimeVue from 'primevue/config';
@@ -71,6 +72,10 @@ Vue.filter('percent', function (value) {
         return `${0}%`;
     }
     return ((Number(value) * 100) / 100).toFixed(2) + '%';
+});
+
+Vue.filter('date', function (value) {
+    return moment(value).format('DD-MM-YYYY');
 });
 
 export const app = new Vue({
